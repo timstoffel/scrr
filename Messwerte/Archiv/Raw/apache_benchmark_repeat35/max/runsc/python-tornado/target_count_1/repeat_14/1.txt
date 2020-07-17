@@ -1,0 +1,53 @@
+2020/01/23 16:41:49 Running: ab -c 100 -t 30 -n 1000000 http://192.168.3.100:8001/
+2020/01/23 16:42:19 This is ApacheBench, Version 2.3 <$Revision: 1843412 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+Benchmarking 192.168.3.100 (be patient)
+Finished 23303 requests
+Server Software:        TornadoServer/4.5.3
+Server Hostname:        192.168.3.100
+Server Port:            8001
+Document Path:          /
+Document Length:        1000 bytes
+Concurrency Level:      100
+Time taken for tests:   30.000 seconds
+Complete requests:      23303
+Failed requests:        0
+Total transferred:      27893691 bytes
+HTML transferred:       23303000 bytes
+Requests per second:    776.76 [#/sec] (mean)
+Time per request:       128.741 [ms] (mean)
+Time per request:       1.287 [ms] (mean, across all concurrent requests)
+Transfer rate:          907.99 [Kbytes/sec] received
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    1   0.4      0       9
+Processing:     6  128  34.9    109     435
+Waiting:        5  128  34.9    109     435
+Total:         10  128  35.0    109     439
+ERROR: The median and mean for the initial connection time are more than twice the standard
+       deviation apart. These results are NOT reliable.
+Percentage of the requests served within a certain time (ms)
+  50%    109
+  66%    141
+  75%    156
+  80%    162
+{"connect":{"max":9,"mean":1,"median":0,"min":0,"stdDev":0.4000000059604645},"percentiles":{"100":439,"50":109,"66":141,"75":156,"80":162,"90":181,"95":193,"98":198,"99":236},"processing":{"max":435,"mean":128,"median":109,"min":6,"stdDev":34.900001525878906},"total":{"max":439,"mean":128,"median":109,"min":10,"stdDev":35},"waiting":{"max":435,"mean":128,"median":109,"min":5,"stdDev":34.900001525878906}}
+  90%    181
+  95%    193
+  98%    198
+  99%    236
+ 100%    439 (longest request)
+2020/01/23 16:42:19 Matched stat line [Connect:        0    1   0.4      0       9 Connect 0 1 0.4 0 9]
+2020/01/23 16:42:19 Matched stat line [Processing:     6  128  34.9    109     435 Processing 6 128 34.9 109 435]
+2020/01/23 16:42:19 Matched stat line [Waiting:        5  128  34.9    109     435 Waiting 5 128 34.9 109 435]
+2020/01/23 16:42:19 Matched stat line [Total:         10  128  35.0    109     439 Total 10 128 35.0 109 439]
+2020/01/23 16:42:19 Matched percentline [  50%    109 50 109]
+2020/01/23 16:42:19 Matched percentline [  66%    141 66 141]
+2020/01/23 16:42:19 Matched percentline [  75%    156 75 156]
+2020/01/23 16:42:19 Matched percentline [  80%    162 80 162]
+2020/01/23 16:42:19 Matched percentline [  90%    181 90 181]
+2020/01/23 16:42:19 Matched percentline [  95%    193 95 193]
+2020/01/23 16:42:19 Matched percentline [  98%    198 98 198]
+2020/01/23 16:42:19 Matched percentline [  99%    236 99 236]
+2020/01/23 16:42:19 Matched percentline [ 100%    439 100 439]

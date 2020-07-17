@@ -1,0 +1,40 @@
+\chapter{Einleitung}
+\label{ch:intro}
+
+Der Wettbewerb drängt Unternehmen dazu, immer schneller qualitativ hochwertige Software zu entwickeln oder Dienste anzubieten. Darüber hinaus sollte flexibel auf geänderte Anforderungen reagiert werden. Aus diesem Grund nimmt die Automatisierung von Prozessen innerhalb der Informationstechnik in den letzten Jahren weiter zu. Ein Beispiel dafür sind Technologieunternehmen, die sehr schnell Softwareänderungen in hoher Qualität bereitstellen: Amazon veröffentlicht 2011 alle elf Sekunden Änderungen, Facebook zweimal am Tag und Google mehrfach pro Woche \cite[vgl.][]{JezHumble.2014}. Der steigende Automatisierungsgrad ermöglicht Unternehmen von der sich daraus ergebenden Kostendegression, der Verbesserung der Flexibilität sowie der Qualität zu profitieren
+
+Um Software effizient, kostengünstig und sicher bereitstellen zu können, wird häufig Virtualisierung verwendet. Damit lässt sich bestehende Hardware virtuell unterteilen und besser ausnutzen. Die bisherige Form der Virtualisierung kann nicht unkompliziert automatisiert werden. Daher wird in vielen Entwicklungs- und IT Teams eine neue Form der Virtualisierung, die Container-Virtualisierung verwendet. Gartner prognostiziert bis 2022 die Nutzung der Containervirtualisierung, in der Produktionsumgebung, von 75\% aller Unternehmen \cite[vgl.][]{ArunChandrasekaran.20190215}.
+
+Mit dem Umstieg von virtuellen Maschinen auf Container ändern sich die Angriffsvektoren. Während virtuelle Maschinen die Systeme klar trennen, teilen sich alle Container einen Kernel \cite[vgl.][6]{Scholl.2019}. Dadurch ergeben sich neue Angriffsszenarien. Zusätzliche Sicherheitsprobleme entstehen durch die Nutzung von unsicheren Containerimages.
+
+Docker ist für die meisten Unternehmen das Werkzeug, um Container zu betreiben \cite[vgl.][5]{sysdig.2019}. Gerade in den letzten Jahren haben sich darüber hinaus, andere Technologien wie Kata Containers, gVisor und Nabla Containers entwickelt, die mit neuen Konzepten den Containerbetrieb sicherer gestalten
+wollen.
+
+%
+% Section: Motivation
+%
+\section{Motivation}
+\label{sec:motivation}
+Die neuen  Technologien isolieren die Container stärker untereinander und trennen diese vom Kernel des Hosts. Durch eine höhere Isolierung erhöht sich in der Regel die Menge an Berechnungen, die notwendig sind, um eine Aufgabe auszuführen, sodass folglich die Performanz zurückgeht.
+
+Diese Arbeit geht den Fragen nach, wie viel sicherer diese Systeme im Vergleich zu Docker sind, inwieweit sich deren Leistung verringert und ob sich die Nutzung der Programme von Docker unterscheidet.
+
+\section{Ziel der Arbeit}
+
+% Definition eines Bewertungsmusters / Kriterienkatalog
+
+% Exemplarisch an den Kandiadten durchführen
+
+% Empfehlung geben
+
+Die vorliegende Arbeit verfolgt zwei Ziele. Zum einen die Konzeption eines Kriterienkatalogs mit dem Fokus auf Leistungsfähigkeit und Sicherheit. Auch Aspekte bezüglich der Benutzbarkeit fließen mit ein. Die Bewertung erfolgt durch einen Vergleich mit Docker, da dies die aktuell meistverwendete Container Runtime ist \cite[vgl.][5]{sysdig.2019}. Zum Anderen wird mit dem Katalog eine Entscheidungsanalyse durchgeführt und eine Bewertung von Docker, Kata Containers, gVisor und Nabla Containers vorgenommen. Mithilfe dieser Bewertung wird eine Empfehlung gegeben.
+
+Die Arbeit beschränkt sich bei der Betrachtung ausschließlich auf Projekte, die als alternative Runtime für die Ausführung von Containern verwendet werden können. 
+Technologien, die zum Beispiel Images auf Sicherheitslücken untersuchen \cite[vgl.][]{Shu.2017b}, wie Clair \cite[][]{Quay.}, werden nicht betrachtet. 
+
+\section{Gliederung}
+\label{sec:gliederung}
+
+Zu Beginn der Arbeit werden wichtige Begriffe definiert und die Kandidaten beschrieben. Im zweiten Teil der Arbeit wird der Kriterienkatalog erstellt. Anschließend werden damit die Projekte Docker, Kata Containers, gVisor und Nabla Containers verglichen. Abschließend wird eine Empfehlung gegeben und aufgezeigt, wie eine Bewertungserweiterung aussehen könnte.
+
+

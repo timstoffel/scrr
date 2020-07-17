@@ -1,0 +1,51 @@
+2020/01/22 15:02:53 Running: ab -c 100 -t 30 -n 1000000 http://192.168.3.100:8005/
+2020/01/22 15:03:23 This is ApacheBench, Version 2.3 <$Revision: 1843412 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+Benchmarking 192.168.3.100 (be patient)
+Finished 9715 requests
+Server Software:        nginx/1.17.7
+Server Hostname:        192.168.3.100
+Server Port:            8005
+Document Path:          /
+Document Length:        612 bytes
+Concurrency Level:      100
+Time taken for tests:   30.001 seconds
+Complete requests:      9715
+Failed requests:        0
+Total transferred:      8209175 bytes
+HTML transferred:       5945580 bytes
+Requests per second:    323.82 [#/sec] (mean)
+Time per request:       308.809 [ms] (mean)
+Time per request:       3.088 [ms] (mean, across all concurrent requests)
+Transfer rate:          267.22 [Kbytes/sec] received
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0   14  66.8      2    1026
+Processing:     2  293 275.8    298    1540
+Waiting:        1  291 274.5    295    1538
+Total:          5  306 282.9    321    1541
+Percentage of the requests served within a certain time (ms)
+  50%    321
+  66%    461
+  75%    502
+  80%    529
+  90%    573
+  95%    637
+  98%   1158
+  99%   1320
+ 100%   1541 (longest request)
+2020/01/22 15:03:23 Matched stat line [Connect:        0   14  66.8      2    1026 Connect 0 14 66.8 2 1026]
+2020/01/22 15:03:23 Matched stat line [Processing:     2  293 275.8    298    1540 Processing 2 293 275.8 298 1540]
+2020/01/22 15:03:23 Matched stat line [Waiting:        1  291 274.5    295    1538 Waiting 1 291 274.5 295 1538]
+2020/01/22 15:03:23 Matched stat line [Total:          5  306 282.9    321    1541 Total 5 306 282.9 321 1541]
+2020/01/22 15:03:23 Matched percentline [  50%    321 50 321]
+2020/01/22 15:03:23 Matched percentline [  66%    461 66 461]
+2020/01/22 15:03:23 Matched percentline [  75%    502 75 502]
+2020/01/22 15:03:23 Matched percentline [  80%    529 80 529]
+2020/01/22 15:03:23 Matched percentline [  90%    573 90 573]
+2020/01/22 15:03:23 Matched percentline [  95%    637 95 637]
+2020/01/22 15:03:23 Matched percentline [  98%   1158 98 1158]
+2020/01/22 15:03:23 Matched percentline [  99%   1320 99 1320]
+2020/01/22 15:03:23 Matched percentline [ 100%   1541 100 1541]
+{"connect":{"max":1026,"mean":14,"median":2,"min":0,"stdDev":66.80000305175781},"percentiles":{"100":1541,"50":321,"66":461,"75":502,"80":529,"90":573,"95":637,"98":1158,"99":1320},"processing":{"max":1540,"mean":293,"median":298,"min":2,"stdDev":275.79998779296875},"total":{"max":1541,"mean":306,"median":321,"min":5,"stdDev":282.8999938964844},"waiting":{"max":1538,"mean":291,"median":295,"min":1,"stdDev":274.5}}

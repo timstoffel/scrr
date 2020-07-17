@@ -1,0 +1,470 @@
+\chapter{Anhang}
+
+\section{Skript zur Ermittlung der Docker Hub Downloads}
+
+\begin{lstlisting}[language=Python,frame=tb,caption=Skript zur Ermittlung der Docker Hub Downloads,captionpos=b,label=lst:dockerhubscript]
+import requests, json
+from module_logging import Logger
+from writefile import writefile
+
+class docker_hub_scraper():
+	def __init__(self, logger):
+		self.logger = logger
+		
+	def loop(self):
+		payload = {}
+		for i in range(1,18):
+			payload["page"] = str(i)
+			self.parsePage(payload)
+		
+	def parsePage(self, payload):
+		url = "https://hub.docker.com/v2/repositories/library/"
+		headers = {'Host': "hub.docker.com", 'Accept-Encoding': "gzip, deflate"}
+		json_obj = json.loads(requests.request("GET", url, headers=headers, params=payload).text)
+		
+		for member in json_obj['results']:
+			try:
+				name = member['name']
+			except:
+				name = ""
+			try:
+				pull_count = member['pull_count']
+			except:
+				pull_count = ""
+			try: 
+				star_count = member['star_count']
+			except:
+				star_count= ""
+		writefile.writecsv(None, 'docker', [name, pull_count, star_count])
+	
+	def run(self):
+		self.logger.info("Start docker hub Scraper.")
+		self.loop()
+
+def main():
+	logger = Logger().init_logging()
+	try:
+		writefile.writecsv(None, 'docker', ['name', 'pull_count', 'star_count'])
+		scraper = docker_hub_scraper(logger)
+		scraper.run()
+	except Exception as e:
+		logger.exception(e)
+
+if __name__ == '__main__':
+	main()
+\end{lstlisting}
+\newpage
+
+\section{ApacheBench}
+\begin{footnotesize}
+\begin{longtable}{llrrrrrr}
+		\hline \spacedlowsmallcaps{Image} & \spacedlowsmallcaps{Limit} &  \spacedlowsmallcaps{Skal.} & \spacedlowsmallcaps{Docker} & \spacedlowsmallcaps{Kata} & \spacedlowsmallcaps{Kata FC} & \spacedlowsmallcaps{gVisor} & \spacedlowsmallcaps{Nabla} \\ 
+		\hline \endfirsthead 
+		\hline \spacedlowsmallcaps{Image} & \spacedlowsmallcaps{Limit} &  \spacedlowsmallcaps{Skal.} & \spacedlowsmallcaps{Docker} & \spacedlowsmallcaps{Kata} & \spacedlowsmallcaps{Kata FC} & \spacedlowsmallcaps{gVisor} & \spacedlowsmallcaps{Nabla} \\ 
+		\hline \endhead
+		go-httpd       & default & 1          & 100,00 & 78,23                       & 47,69                          & 36,16  & 36,21  \\
+		go-httpd       & default & 2          & 100,00 & 112,48                      & 64,85                          & 31,89  & 57,08  \\
+		go-httpd       & default & 3          & 100,00 & 113,77                      & 77,41                          & 38,00  & 85,69  \\
+		go-httpd       & default & 5          & 100,00 & 129,06                      & 110,74                         & 44,51  & 126,96 \\
+		go-httpd       & default & 8          & 100,00 & 146,95                      & \cellcolor[HTML]{C0C0C0}100,00 & 38,39  & 144,19 \\
+		go-httpd       & default & 13         & 100,00 & 173,04                      & 94,80                          & 38,74  & 176,04 \\
+		go-httpd       & default & 21         & 100,00 & 191,93                      & 88,15                          & 40,34  & 175,99 \\ \hline
+		Schnitt        &         &            & 100,00 & 135,07                      & 83,38                          & 38,29  & 114,59 \\ \hline
+		go-httpd       & min     & 1          & 100,00 & 683,19                      & 374,37                         & 18,25  & 280,40 \\
+		go-httpd       & min     & 2          & 100,00 & 148,86                      & 97,87                          & 6,17   & 85,84  \\
+		go-httpd       & min     & 3          & 100,00 & 122,98                      & 80,72                          & 6,33   & 88,70  \\
+		go-httpd       & min     & 5          & 100,00 & 132,59                      & 115,12                         & 29,56  & 131,24 \\
+		go-httpd       & min     & 8          & 100,00 & 146,50                      & 105,08                         & 33,80  & 146,80 \\
+		go-httpd       & min     & 13         & 100,00 & 173,96                      & 97,95                          & 34,63  & 183,15 \\
+		go-httpd       & min     & 21         & 100,00 & 204,95                      & 90,14                          & 37,00     & 182,20 \\ \hline
+		Schnitt        &         &            & 100,00 & 230,43                      & 137,32                         & 23,68  & 156,90 \\ \hline
+		go-httpd       & max     & 1          & 100,00 & 88,36                       & 45,66                          & 35,44  & 34,16  \\
+		go-httpd       & max     & 2          & 100,00 & 102,52                      & 63,70                          & 31,67  & 55,57  \\
+		go-httpd       & max     & 3          & 100,00 & 118,93                      & 75,50                          & 37,64  & 82,85  \\
+		go-httpd       & max     & 5          & 100,00 & 126,32                      & 110,57                         & 43,70  & 121,14 \\
+		go-httpd       & max     & 8          & 100,00 & 128,24                      & 97,21                          & 37,85  & 140,03 \\
+		go-httpd       & max     & 13         & 100,00 & 136,06                      & 91,57                          & 38,69  & 175,26 \\
+		go-httpd       & max     & 21         & 100,00 & 148,21                      & 86,89                          & 40,63  & 174,66 \\ \hline
+		Schnitt        &         &            & 100,00 & 121,23                      & 81,59                          & 37,95  & 111,95 \\ \hline
+		\multicolumn{2}{l}{Schnitt Image} &            & 100,00 & 162,24                      & 100,76                         & 33,31  & 127,81 \\ \hline
+		httpd          & default & 1          & 100,00 & 13,07                       & 8,05                           & -      & -      \\
+		httpd          & default & 2          & 100,00 & 18,92                       & 12,45                          & -      & -      \\
+		httpd          & default & 3          & 100,00 & 29,83                       & 31,60                          & -      & -      \\
+		httpd          & default & 5          & 100,00 & 43,33                       & 32,32                          & -      & -      \\
+		httpd          & default & 8          & 100,00 & 34,06                       & 22,09                          & -      & -      \\
+		httpd          & default & 13         & 100,00 & 33,02                       & 20,68                          & -      & -      \\
+		httpd          & default & 21         & 100,00 & 34,76                       & 20,86                          & -      & -      \\ \hline
+		Schnitt        &         &            & 100,00 & 29,57                       & 21,15                          & -      & -      \\ \hline
+		httpd          & min     & 1          & 100,00 & 278,28                      & 121,47                         & -      & -      \\
+		httpd          & min     & 2          & 100,00 & 222,73                      & 102,83                         & -      & -      \\
+		httpd          & min     & 3          & 100,00 & 189,56                      & 148,63                         & -      & -      \\
+		httpd          & min     & 5          & 100,00 & 65,94                       & 36,92                          & -      & -      \\
+		httpd          & min     & 8          & 100,00 & 84,40                       & 24,50                          & -      & -      \\
+		httpd          & min     & 13         & 100,00 & 101,23                      & 22,98                          & -      & -      \\
+		httpd          & min     & 21         & 100,00 & 104,80                      & 22,38                          & -      & -      \\ \hline
+		Schnitt        &         &            & 100,00 & 149,56                      & 68,53                          & -      & -      \\ \hline
+		httpd          & max     & 1          & 100,00 & 11,70                       & 7,87                           & -      & -      \\
+		httpd          & max     & 2          & 100,00 & 14,03                       & 12,51                          & -      & -      \\
+		httpd          & max     & 3          & 100,00 & 21,20                       & 31,75                          & -      & -      \\
+		httpd          & max     & 5          & 100,00 & 33,30                       & 32,51                          & -      & -      \\
+		httpd          & max     & 8          & 100,00 & 50,81                       & 22,06                          & -      & -      \\
+		httpd          & max     & 13         & 100,00 & 73,94                       & 20,95                          & -      & -      \\
+		httpd          & max     & 21         & 100,00 & 87,48                       & 20,96                          & -      & -      \\ \hline
+		Schnitt        &         &            & 100,00 & 41,78                       & 21,23                          & -      & -      \\ \hline
+		\multicolumn{2}{l}{Schnitt Image} &            & 100,00 & 73,64                       & 36,97                          & -      & -      \\ \hline
+		nginx          & default & 1          & 100,00 & 33,48                       & 10,69                          & 20,35  & -      \\
+		nginx          & default & 2          & 100,00 & 44,75                       & 20,36                          & 29,36  & -      \\
+		nginx          & default & 3          & 100,00 & 69,22                       & 61,60                          & 39,38  & -      \\
+		nginx          & default & 5          & 100,00 & 83,04                       & 74,06                          & 44,27  & -      \\
+		nginx          & default & 8          & 100,00 & 64,10                       & 41,78                          & 43,80  & -      \\
+		nginx          & default & 13         & 100,00 & 52,11                       & 33,95                          & 44,65  & -      \\
+		nginx          & default & 21         & 100,00 & 51,75                       & 31,99                          & 44,85  & -      \\ \hline
+		Schnitt        &         &            & 100,00 & 56,92                       & 39,20                          & 38,09  & -      \\ \hline
+		nginx          & min     & 1          & 100,00 & 56,54                       & 11,14                          & 2,56   & -      \\
+		nginx          & min     & 2          & 100,00 & 65,09                       & 21,06                          & 3,93   & -      \\
+		nginx          & min     & 3          & 100,00 & 78,10                       & 62,43                          & 6,40   & -      \\
+		nginx          & min     & 5          & 100,00 & 94,09                       & 74,99                          & 37,34  & -      \\
+		nginx          & min     & 8          & 100,00 & 105,14                      & 42,09                          & 39,78  & -      \\
+		nginx          & min     & 13         & 100,00 & 115,56                      & 33,67                          & 40,83  & -      \\
+		nginx          & min     & 21         & 100,00 & 126,55                      & 31,24                          & 41,81  & -      \\ \hline
+		Schnitt        &         &            & 100,00 & 91,58                       & 39,52                          & 24,66  & -      \\ \hline
+		nginx          & max     & 1          & 100,00 & 19,54                       & 10,94                          & 20,32  & -      \\
+		nginx          & max     & 2          & 100,00 & 25,49                       & 19,83                          & 28,92  & -      \\
+		nginx          & max     & 3          & 100,00 & 33,93                       & 60,94                          & 38,89  & -      \\
+		nginx          & max     & 5          & 100,00 & 46,19                       & 73,27                          & 43,72  & -      \\
+		nginx          & max     & 8          & 100,00 & 59,27                       & 41,58                          & 43,47  & -      \\
+		nginx          & max     & 13         & 100,00 & 76,09                       & 33,03                          & 44,49  & -      \\
+		nginx          & max     & 21         & 100,00 & 97,57                       & 31,70                          & 44,80  & -      \\ \hline
+		Schnitt        &         &            & 100,00 & 51,15                       & 38,76                          & 37,80  & -      \\ \hline
+		\multicolumn{2}{l}{Schnitt Image} &            & 100,00 & 66,55                       & 39,16                          & 33,52  & -      \\ \hline
+		{\scriptsize python-tornado} & default & 1          & 100,00 & 95,73                       & 82,96                          & 41,41  & 109,44 \\
+		{\scriptsize python-tornado} & default & 2          & 100,00 & 94,59                       & 77,77                          & 57,75  & 107,03 \\
+		{\scriptsize python-tornado} & default & 3          & 100,00 & 90,30                       & 71,97                          & 57,61  & 107,19 \\
+		{\scriptsize python-tornado} & default & 5          & 100,00 & 82,61                       & 66,02                          & 60,62  & 105,63 \\
+		{\scriptsize python-tornado} & default & 8          & 100,00 & 76,26                       & 61,14                          & 55,19  & 107,39 \\
+		{\scriptsize python-tornado} & default & 13         & 100,00 & 68,60                       & 54,39                          & 54,05  & -      \\
+		{\scriptsize python-tornado} & default & 21         & 100,00 & 66,30                       & 53,03                          & 54,38  & -      \\ \hline
+		Schnitt        &         &            & 100,00 & 82,06                       & 66,75                          & 54,43  & 107,34 \\ \hline
+		{\scriptsize python-tornado} & min     & 1          & 100,00 & \cellcolor[HTML]{C0C0C0}100,00 & 79,45                          & 9,45   & 108,88 \\
+		{\scriptsize python-tornado} & min     & 2          & 100,00 & 97,81                       & 77,43                          & 13,06  & 107,30 \\
+		{\scriptsize python-tornado} & min     & 3          & 100,00 & 93,54                       & 73,37                          & 11,18  & 107,05 \\
+		{\scriptsize python-tornado} & min     & 5          & 100,00 & 78,17                       & 66,10                          & 40,42  & 105,28 \\
+		{\scriptsize python-tornado} & min     & 8          & 100,00 & 58,91                       & 60,82                          & 49,84  & 107,30 \\
+		{\scriptsize python-tornado} & min     & 13         & 100,00 & 51,14                       & 54,20                          & 49,99  & -      \\
+		{\scriptsize python-tornado} & min     & 21         & 100,00 & 47,01                       & 51,88                          & 50,47  & -      \\ \hline
+		Schnitt        &         &            & 100,00 & 75,23                       & 66,18                          & 32,06  & 107,16 \\ \hline
+		{\scriptsize python-tornado} & max     & 1          & 100,00 & \cellcolor[HTML]{C0C0C0}100,00 & 79,94                          & 40,39  & 107,43 \\
+		{\scriptsize python-tornado} & max     & 2          & 100,00 & \cellcolor[HTML]{C0C0C0}100,00 & 77,56                          & 57,55  & 107,15 \\
+		{\scriptsize python-tornado} & max     & 3          & 100,00 & 95,36                       & 72,65                          & 57,49  & 104    \\
+		{\scriptsize python-tornado} & max     & 5          & 100,00 & 78,06                       & 65,63                          & 60,39  & 104,31 \\
+		{\scriptsize python-tornado} & max     & 8          & 100,00 & 61,16                       & 61,09                          & 55,12  & 106,03 \\
+		{\scriptsize python-tornado} & max     & 13         & 100,00 & 52,92                       & 54,72                          & 54,26  & -      \\
+		{\scriptsize python-tornado} & max     & 21         & 100,00 & 48,61                       & 52,76                          & 54,60  & -      \\ \hline
+		Schnitt        &         &            & 100,00 & 76,59                       & 66,34                          & 54,26  & 105,78 \\ \hline
+		\multicolumn{2}{l}{Schnitt Image} &            & 100,00 & 77,96                       & 66,42                          & 46,92  & 106,76 \\ \hline
+		tomcat         & default & 1          & 100,00 & 48,13                       & -                              & 38,17  & -      \\
+		tomcat         & default & 2          & 100,00 & 56,90                       & -                              & 29,91  & -      \\
+		tomcat         & default & 3          & 100,00 & 80,53                       & -                              & 35,08  & -      \\
+		tomcat         & default & 5          & 100,00 & 105,81                      & -                              & 34,18  & -      \\
+		tomcat         & default & 8          & 100,00 & \cellcolor[HTML]{C0C0C0}100,00 & -                              & 26,86  & -      \\
+		tomcat         & default & 13         & 100,00 & 89,67                       & -                              & 23,42  & -      \\
+		tomcat         & default & 21         & 100,00 & 86,92                       & -                              & 21,21  & -      \\ \hline
+		Schnitt        &         &            & 100,00 & 81,14                       & -                              & 29,83  & -      \\ \hline
+		tomcat         & min     & 1          & 100,00 & 1001,95                     & -                              & 19,96  & -      \\
+		tomcat         & min     & 2          & 100,00 & 397,18                      & -                              & 15,83  & -      \\
+		tomcat         & min     & 3          & 100,00 & 403,89                      & -                              & 14,78  & -      \\
+		tomcat         & min     & 5          & 100,00 & 109,93                      & -                              & 18,96  & -      \\
+		tomcat         & min     & 8          & 100,00 & 116,57                      & -                              & 21,42  & -      \\
+		tomcat         & min     & 13         & 100,00 & 112,73                      & -                              & 19,24  & -      \\
+		tomcat         & min     & 21         & 100,00 & 95,48                       & -                              & 16,83  & -      \\ \hline
+		Schnitt        &         &            & 100,00 & 319,68                      & -                              & 18,15  & -      \\ \hline
+		tomcat         & max     & 1          & 100,00 & 107,45                      & -                              & 39,52  & -      \\
+		tomcat         & max     & 2          & 100,00 & 96,89                       & -                              & 29,77  & -      \\
+		tomcat         & max     & 3          & 100,00 & 114,27                      & -                              & 35,23  & -      \\
+		tomcat         & max     & 5          & 100,00 & 126,56                      & -                              & 34,33  & -      \\
+		tomcat         & max     & 8          & 100,00 & 117,38                      & -                              & 26,81  & -      \\
+		tomcat         & max     & 13         & 100,00 & 104,51                      & -                              & 23,34  & -      \\
+		tomcat         & max     & 21         & 100,00 & 75,59                       & -                              & 21,14  & -      \\ \hline
+		Schnitt        &         &            & 100,00 & 106,09                      & -                              & 30,02  & -      \\ \hline
+		\multicolumn{2}{l}{Schnitt Image} &            & 100,00 & 168,97                      & -                              & 26,00  & -      \\ \hline
+%\end{tabularx}
+\caption[Ergebnisse ApacheBench]{Ergebnisse des ApacheBench Benchmarks, \newline \footnotesize Skalierung ist als Skal. abgekürzt, alle Angaben in Prozent,  Werte größer 100,00 sind besser}
+\label{tbl:abdetailauswertung}
+\end{longtable}
+\end{footnotesize}
+\newpage
+
+\section{Arbeitsspeicherverbrauch}
+
+\begin{footnotesize}
+	\begin{longtable}{llrrrrrr}
+		\hline \spacedlowsmallcaps{Image} & \spacedlowsmallcaps{Limit} &  \spacedlowsmallcaps{Skal.} & \spacedlowsmallcaps{Docker} & \spacedlowsmallcaps{Kata} & \spacedlowsmallcaps{Kata FC} & \spacedlowsmallcaps{gVisor} & \spacedlowsmallcaps{Nabla} \\ 
+		\hline \endfirsthead 
+		\hline \spacedlowsmallcaps{Image} & \spacedlowsmallcaps{Limit} &  \spacedlowsmallcaps{Skal.} & \spacedlowsmallcaps{Docker} & \spacedlowsmallcaps{Kata} & \spacedlowsmallcaps{Kata FC} & \spacedlowsmallcaps{gVisor} & \spacedlowsmallcaps{Nabla} \\ 
+		 \hline \endhead
+		go-httpd       & default & 1          & 100,00 & 107,02                      & 71,09                       & 373,68                      & 76,76                       \\
+		go-httpd       & default & 2          & 100,00 & 140,66                      & 75,88                       & 352,86                      & 90,13                       \\
+		go-httpd       & default & 3          & 100,00 & 165,39                      & 81,08                       & 347,10                      & \cellcolor[HTML]{C0C0C0}100,00 \\
+		go-httpd       & default & 5          & 100,00 & 188,08                      & 84,21                       & 342,15                      & 103,70                      \\
+		go-httpd       & default & 8          & 100,00 & 183,51                      & 93,63                       & 295,29                      & 92,66                       \\
+		go-httpd       & default & 13         & 100,00 & 164,79                      & \cellcolor[HTML]{C0C0C0}100,00 & 231,81                      & 77,42                       \\
+		go-httpd       & default & 21         & 100,00 & 150,40                      & 108,70                      & 187,16                      & 114,95                      \\ \hline
+		Schnitt        &         &            & 100,00 & 157,12                      & 87,80                       & 304,29                      & 93,66                       \\ \hline
+		go-httpd       & min     & 1          & 100,00 & 176,89                      & 103,47                      & 106,52                      & 112,94                      \\
+		go-httpd       & min     & 2          & 100,00 & 226,82                      & 103,11                      & 108,78                      & 126,27                      \\
+		go-httpd       & min     & 3          & 100,00 & 251,94                      & 102,62                      & 109,32                      & 131,86                      \\
+		go-httpd       & min     & 5          & 100,00 & 274,18                      & \cellcolor[HTML]{C0C0C0}100,00 & 124,59                      & 127,19                      \\
+		go-httpd       & min     & 8          & 100,00 & 264,42                      & 107,33                      & 166,34                      & 107,14                      \\
+		go-httpd       & min     & 13         & 100,00 & 227,88                      & 119,14                      & 166,75                      & 85,12                       \\
+		go-httpd       & min     & 21         & 100,00 & 196,11                      & 108,73                      & 152,08                      & 110,53                      \\ \hline
+		Schnitt        &         &            & 100,00 & 231,18                      & 106,34                      & 133,48                      & 114,44                      \\ \hline
+		go-httpd       & max     & 1          & 100,00 & 253,15                      & 101,31                      & 108,77                      & 111,16                      \\
+		go-httpd       & max     & 2          & 100,00 & 355,45                      & \cellcolor[HTML]{C0C0C0}100,00 & 136,46                      & 125,34                      \\
+		go-httpd       & max     & 3          & 100,00 & 426,86                      & 102,13                      & 162,76                      & 136,56                      \\
+		go-httpd       & max     & 5          & 100,00 & 503,02                      & 102,81                      & 194,98                      & 138,74                      \\
+		go-httpd       & max     & 8          & 100,00 & 502,09                      & 108,08                      & 201,82                      & 115,11                      \\
+		go-httpd       & max     & 13         & 100,00 & 444,17                      & 110,90                      & 184,05                      & 91,42                       \\
+		go-httpd       & max     & 21         & 100,00 & 368,34                      & 110,55                      & 159,56                      & 118,20                      \\ \hline
+		Schnitt        &         &            & 100,00 & 407,58                      & 105,11                      & 164,06                      & 119,50                      \\ \hline
+		\multicolumn{2}{l}{Schnitt Image} &            & 100,00 & 265,29                      & 99,75                       & 200,61                      & 152,06                      \\ \hline
+		httpd          & default & 1          & 100,00 & 142,99                      & 92,62                       & -                           & -                           \\
+		httpd          & default & 2          & 100,00 & 164,94                      & 87,01                       & -                           & -                           \\
+		httpd          & default & 3          & 100,00 & 181,23                      & 85,60                       & -                           & -                           \\
+		httpd          & default & 5          & 100,00 & 200,77                      & 86,17                       & -                           & -                           \\
+		httpd          & default & 8          & 100,00 & 204,85                      & 83,91                       & -                           & -                           \\
+		httpd          & default & 13         & 100,00 & 192,72                      & 76,75                       & -                           & -                           \\
+		httpd          & default & 21         & 100,00 & 163,98                      & 64,44                       & -                           & -                           \\ \hline
+		Schnitt        &         &            & 100,00 & 178,78                      & 82,36                       & -                           & -                           \\ \hline
+		httpd          & min     & 1          & 100,00 & 165,41                      & 97,87                       & -                           & -                           \\
+		httpd          & min     & 2          & 100,00 & 201,44                      & 91,48                       & -                           & -                           \\
+		httpd          & min     & 3          & 100,00 & 218,94                      & 84,07                       & -                           & -                           \\
+		httpd          & min     & 5          & 100,00 & 241,24                      & 86,28                       & -                           & -                           \\
+		httpd          & min     & 8          & 100,00 & 248,27                      & 83,79                       & -                           & -                           \\
+		httpd          & min     & 13         & 100,00 & 242,20                      & 76,90                       & -                           & -                           \\
+		httpd          & min     & 21         & 100,00 & 216,16                      & 65,11                       & -                           & -                           \\ \hline
+		Schnitt        &         &            & 100,00 & 219,09                      & 83,64                       & -                           & -                           \\ \hline
+		httpd          & max     & 1          & 100,00 & 286,06                      & 279,52                      & -                           & -                           \\
+		httpd          & max     & 2          & 100,00 & 311,03                      & 232,57                      & -                           & -                           \\
+		httpd          & max     & 3          & 100,00 & 359,01                      & 221,16                      & -                           & -                           \\
+		httpd          & max     & 5          & 100,00 & 406,26                      & 192,15                      & -                           & -                           \\
+		httpd          & max     & 8          & 100,00 & 420,94                      & 158,84                      & -                           & -                           \\
+		httpd          & max     & 13         & 100,00 & 417,85                      & 124,56                      & -                           & -                           \\
+		httpd          & max     & 21         & 100,00 & 341,12                      & 86,79                       & -                           & -                           \\ \hline
+		Schnitt        &         &            & 100,00 & 363,18                      & 185,08                      & -                           & -                           \\ \hline
+		\multicolumn{2}{l}{Schnitt Image} &            & 100,00 & 253,68                      & 117,03                      & -                           & -                           \\ \hline
+		nginx          & default & 1          & 100,00 & \cellcolor[HTML]{C0C0C0}100,00 & 81,36                       & \cellcolor[HTML]{C0C0C0}100,00 & -                           \\
+		nginx          & default & 2          & 100,00 & 103,85                      & 89,86                       & 114,34                      & -                           \\
+		nginx          & default & 3          & 100,00 & 116,17                      & 93,59                       & 118,85                      & -                           \\
+		nginx          & default & 5          & 100,00 & 137,95                      & 96,25                       & 128,73                      & -                           \\
+		nginx          & default & 8          & 100,00 & 162,81                      & 101,07                      & 134,58                      & -                           \\
+		nginx          & default & 13         & 100,00 & 189,91                      & 106,91                      & 136,84                      & -                           \\
+		nginx          & default & 21         & 100,00 & 205,13                      & 107,26                      & 133,11                      & -                           \\ \hline
+		Schnitt        &         &            & 100,00 & 145,12                      & 96,61                       & 123,78                      & -                           \\ \hline
+		nginx          & min     & 1          & 100,00 & 84,28                       & 81,17                       & \cellcolor[HTML]{C0C0C0}100,00 & -                           \\
+		nginx          & min     & 2          & 100,00 & 113,82                      & 98,14                       & 102,47                      & -                           \\
+		nginx          & min     & 3          & 100,00 & 129,42                      & 99,51                       & 104,12                      & -                           \\
+		nginx          & min     & 5          & 100,00 & 154,81                      & 100,00                         & 111,61                      & -                           \\
+		nginx          & min     & 8          & 100,00 & 190,21                      & 107,89                      & 119,63                      & -                           \\
+		nginx          & min     & 13         & 100,00 & 219,09                      & 111,22                      & 122,80                      & -                           \\
+		nginx          & min     & 21         & 100,00 & 224,72                      & 107,99                      & 124,74                      & -                           \\ \hline
+		Schnitt        &         &            & 100,00 & 159,48                      & 100,85                      & 112,20                      & -                           \\ \hline
+		nginx          & max     & 1          & 100,00 & \cellcolor[HTML]{C0C0C0}100,00 & \cellcolor[HTML]{C0C0C0}100,00 & \cellcolor[HTML]{C0C0C0}100,00 & -                           \\
+		nginx          & max     & 2          & 100,00 & 144,76                      & 110,38                      & 102,77                      & -                           \\
+		nginx          & max     & 3          & 100,00 & 174,67                      & 113                         & 105,12                      & -                           \\
+		nginx          & max     & 5          & 100,00 & 225,88                      & 112,41                      & 112,96                      & -                           \\
+		nginx          & max     & 8          & 100,00 & 295,32                      & 120,38                      & 121,29                      & -                           \\
+		nginx          & max     & 13         & 100,00 & 354,13                      & 120,99                      & 124,08                      & -                           \\
+		nginx          & max     & 21         & 100,00 & 372,26                      & 113,68                      & 124,58                      & -                           \\ \hline
+		Schnitt        &         &            & 100,00 & 238,15                      & 112,98                      & 112,97                      & -                           \\ \hline
+		\multicolumn{2}{l}{Schnitt Image} &            & 100,00 & 180,92                      & 103,48                      & 116,32                      & -                           \\ \hline
+		python-tornado & default & 1          & 100,00 & 52,59                       & \cellcolor[HTML]{C0C0C0}100,00 & \cellcolor[HTML]{C0C0C0}100,00 & 16,14                       \\
+		python-tornado & default & 2          & 100,00 & 75,36                       & 91,72                       & 118,33                      & 27,24                       \\
+		python-tornado & default & 3          & 100,00 & 90,70                       & 89,34                       & 122,09                      & 34,21                       \\
+		python-tornado & default & 5          & 100,00 & 113,30                      & 89,36                       & 128,31                      & 46,74                       \\
+		python-tornado & default & 8          & 100,00 & 137,67                      & 90,81                       & 132,20                      & 64,76                       \\
+		python-tornado & default & 13         & 100,00 & 158,66                      & 87,70                       & 129,14                      & -                           \\
+		python-tornado & default & 21         & 100,00 & 175                         & 82,99                       & 123                         & -                           \\ \hline
+		Schnitt        &         &            & 100,00 & 114,75                      & 90,27                       & 121,87                      & 37,82                       \\ \hline
+		python-tornado & min     & 1          & 100,00 & 70,28                       & \cellcolor[HTML]{C0C0C0}100,00 & \cellcolor[HTML]{C0C0C0}100,00 & 17,46                       \\
+		python-tornado & min     & 2          & 100,00 & 96,61                       & 97,65                       & \cellcolor[HTML]{C0C0C0}100,00 & 30,09                       \\
+		python-tornado & min     & 3          & 100,00 & 114,12                      & 95,49                       & \cellcolor[HTML]{C0C0C0}100,00 & 37,51                       \\
+		python-tornado & min     & 5          & 100,00 & 140,98                      & 94,09                       & \cellcolor[HTML]{C0C0C0}100,00 & 50,85                       \\
+		python-tornado & min     & 8          & 100,00 & 167,15                      & 94,38                       & 106,53                      & 69,18                       \\
+		python-tornado & min     & 13         & 100,00 & 190,87                      & 89,29                       & 111,77                      & -                           \\
+		python-tornado & min     & 21         & 100,00 & 198,67                      & 83,54                       & 111,14                      & -                           \\ \hline
+		Schnitt        &         &            & 100,00 & 139,81                      & 93,49                       & 104,21                      & 41,02                       \\ \hline
+		python-tornado & max     & 1          & 100,00 & 70,28                       & \cellcolor[HTML]{C0C0C0}100,00 & \cellcolor[HTML]{C0C0C0}100,00 & 16,51                       \\
+		python-tornado & max     & 2          & 100,00 & 96,61                       & 103,72                      & 100,98                      & 29,67                       \\
+		python-tornado & max     & 3          & 100,00 & 114,12                      & 103,72                      & 103,24                      & 37,14                       \\
+		python-tornado & max     & 5          & 100,00 & 140,98                      & 103,23                      & 109,80                      & 51,09                       \\
+		python-tornado & max     & 8          & 100,00 & 167,15                      & 101,15                      & 114,57                      & 70,07                       \\
+		python-tornado & max     & 13         & 100,00 & 190,87                      & 96,25                       & 118,44                      & -                           \\
+		python-tornado & max     & 21         & 100,00 & 198,67                      & 88,49                       & 116,37                      & -                           \\ \hline
+		Schnitt        &         &            & 100,00 & 139,81                      & 99,51                       & 109,06                      & 40,90                       \\ \hline
+		\multicolumn{2}{l}{Schnitt Image} &            & 100,00 & 131,46                      & 94,42                       & 111,71                      & 39,91                       \\ \hline
+		tomcat         & default & 1          & 100,00 & \cellcolor[HTML]{C0C0C0}100,00 & -                           & 67,82                       & -                           \\
+		tomcat         & default & 2          & 100,00 & 121,98                      & -                           & 65,04                       & -                           \\
+		tomcat         & default & 3          & 100,00 & 126,62                      & -                           & 63,86                       & -                           \\
+		tomcat         & default & 5          & 100,00 & 127,24                      & -                           & 61,98                       & -                           \\
+		tomcat         & default & 8          & 100,00 & 130,94                      & -                           & 57,61                       & -                           \\
+		tomcat         & default & 13         & 100,00 & 140,79                      & -                           & 52,95                       & -                           \\
+		tomcat         & default & 21         & 100,00 & 139,76                      & -                           & 46,90                       & -                           \\ \hline
+		Schnitt        &         &            & 100,00 & 126,76                      & -                           & 59,45                       & -                           \\ \hline
+		tomcat         & min     & 1          & 100,00 & \cellcolor[HTML]{C0C0C0}100,00 & -                           & 13,04                       & -                           \\
+		tomcat         & min     & 2          & 100,00 & 132,48                      & -                           & 20,10                       & -                           \\
+		tomcat         & min     & 3          & 100,00 & 150,47                      & -                           & 23,67                       & -                           \\
+		tomcat         & min     & 5          & 100,00 & 169,80                      & -                           & 28,35                       & -                           \\
+		tomcat         & min     & 8          & 100,00 & 178,30                      & -                           & 33,41                       & -                           \\
+		tomcat         & min     & 13         & 100,00 & 194,29                      & -                           & 37,61                       & -                           \\
+		tomcat         & min     & 21         & 100,00 & 194,98                      & -                           & 40,13                       & -                           \\ \hline
+		Schnitt        &         &            & 100,00 & 160,05                      & -                           & 28,04                       & -                           \\ \hline
+		tomcat         & max     & 1          & 100,00 & \cellcolor[HTML]{C0C0C0}100,00 & -                           & 17,13                       & -                           \\
+		tomcat         & max     & 2          & 100,00 & 136,32                      & -                           & 25,44                       & -                           \\
+		tomcat         & max     & 3          & 100,00 & 159,13                      & -                           & 28,46                       & -                           \\
+		tomcat         & max     & 5          & 100,00 & 184,09                      & -                           & 36,11                       & -                           \\
+		tomcat         & max     & 8          & 100,00 & 208,21                      & -                           & 43,10                       & -                           \\
+		tomcat         & max     & 13         & 100,00 & 228,17                      & -                           & 46,43                       & -                           \\
+		tomcat         & max     & 21         & 100,00 & 213,12                      & -                           & 46,16                       & -                           \\ \hline
+		Schnitt        &         &            & 100,00 & 175,58                      & -                           & 34,69                       & -                           \\ \hline
+		\multicolumn{2}{l}{Schnitt Image} &            & 100,00 & 154,13                      & -                           & 40,73                       & -                           \\ \hline
+		\caption[Ergebnisse Arbeitsspeicherverbrauch]{Ergebnisse Arbeitsspeicherverbrauch, \\\hspace{\textwidth} \footnotesize Skalierung ist als Skal. abgekürzt, alle Angaben in Prozent,  Werte kleiner 100 sind besser}
+		\label{tbl:ramdetailauswertung}
+	\end{longtable}
+\end{footnotesize}
+
+\section{Dauer des Startens eines Containers}
+\begin{footnotesize}
+	\begin{longtable}{llrrrrr}
+		\hline \spacedlowsmallcaps{Image} & \spacedlowsmallcaps{Limit} & \spacedlowsmallcaps{Docker} & \spacedlowsmallcaps{Kata} & \spacedlowsmallcaps{Kata FC} & \spacedlowsmallcaps{gVisor} & \spacedlowsmallcaps{Nabla} \\ 
+		\hline \endfirsthead 
+		\hline \spacedlowsmallcaps{Image} & \spacedlowsmallcaps{Limit} & \spacedlowsmallcaps{Docker} & \spacedlowsmallcaps{Kata} & \spacedlowsmallcaps{Kata FC} & \spacedlowsmallcaps{gVisor} & \spacedlowsmallcaps{Nabla} \\ 
+		\hline \endhead
+		alpine                   & default         & 100,00 & 176,16 & 352,22  & 106,55                         & -      \\
+		alpine                   & min             & 100,00 & 180,26 & 323,09  & 105,34                         & -      \\
+		alpine                   & max             & 100,00 & 223,05 & 327,06  & 104,84                         & -      \\ \hline
+		\multicolumn{2}{l}{alpine Schnitt}         & 100,00 & 193,16 & 334,12  & 105,58                         & -      \\ \hline
+		busybox                  & default         & 100,00 & 166,29 & 317,63  & \cellcolor[HTML]{C0C0C0}100,00 & -      \\
+		busybox                  & min             & 100,00 & 182,19 & 320,92  & 103,79                         & -      \\
+		busybox                  & max             & 100,00 & 228,39 & 342,11  & 106,35                         & -      \\ \hline
+		\multicolumn{2}{l}{busybox Schnitt}        & 100,00 & 192,29 & 326,89  & 103,38                         & -      \\ \hline
+		go-httpd                 & default         & 100,00 & 160,53 & 317,65  & 103,79                         & 343,08 \\
+		go-httpd                 & min             & 100,00 & 169,60 & 311,18  & 105,90                         & 347,82 \\
+		go-httpd                 & max             & 100,00 & 203,68 & 302,71  & \cellcolor[HTML]{C0C0C0}100,00 & 330,93 \\ \hline
+		\multicolumn{2}{l}{go-httpd Schnitt}       & 100,00 & 177,94 & 310,51  & 103,23                         & 340,61 \\ \hline
+		httpd                    & default         & 100,00 & 158,96 & 309,97  & \cellcolor[HTML]{C0C0C0}100,00 & -      \\
+		httpd                    & min             & 100,00 & 165,27 & 309,33  & 105,30                         & -      \\
+		httpd                    & max             & 100,00 & 211,24 & 310,88  & 104,42                         & -      \\ \hline
+		\multicolumn{2}{l}{httpd Schnitt}          & 100,00 & 178,49 & 310,06  & 103,24                         & -      \\ \hline
+		mongo                    & default         & 100,00 & 157,51 & 302,69  & 104,02                         & -      \\
+		mongo                    & min             & 100,00 & 169,10 & 309,86  & 108,12                         & -      \\
+		mongo                    & max             & 100,00 & 211,82 & 308,16  & 107,13                         & -      \\ \hline
+		\multicolumn{2}{l}{mongo Schnitt}          & 100,00 & 179,48 & 306,90  & 106,42                         & -      \\ \hline
+		nginx                    & default         & 100,00 & 160,27 & 314,81  & 105,56                         & -      \\
+		nginx                    & min             & 100,00 & 168,20 & 310,75  & 104,82                         & -      \\
+		nginx                    & max             & 100,00 & 212,79 & 314,70  & 104,67                         & -      \\ \hline
+		\multicolumn{2}{l}{nginx Schnitt}          & 100,00 & 180,42 & 313,42  & 105,02                         & -      \\ \hline
+		node-express             & default         & 100,00 & 163,48 & 321,62  & 106,06                         & 352,23 \\
+		node-express             & min             & 100,00 & 171,36 & 316,21  & 107,73                         & 346,04 \\
+		node-express             & max             & 100,00 & 212,23 & 307,37  & \cellcolor[HTML]{C0C0C0}100,00 & 339,04 \\ \hline
+		\multicolumn{2}{l}{node-express Schnitt}   & 100,00 & 182,36 & 315,07  & 104,60                         & 345,77 \\ \hline
+		postgres                 & default         & 100,00 & 156,76 & 304,81  & 104,85                         & -      \\
+		postgres                 & min             & 100,00 & 166,08 & 310,80  & 107,39                         & -      \\
+		postgres                 & max             & 100,00 & 214,87 & 309,04  & 108,87                         & -      \\ \hline
+		\multicolumn{2}{l}{postgres Schnitt}       & 100,00 & 179,24 & 308,22  & 107,04                         & -      \\ \hline
+		python-tornado           & default         & 100,00 & 158,63 & 310,91  & 104,33                         & 134,84 \\
+		python-tornado           & min             & 100,00 & 167,17 & 312,13  & \cellcolor[HTML]{C0C0C0}100,00 & 135,35 \\
+		python-tornado           & max             & 100,00 & 214,09 & 315,02  & 106,61                         & 135,74 \\ \hline
+		\multicolumn{2}{l}{python-tornado Schnitt} & 100,00 & 179,96 & 312,69  & 103,65                         & 135,31 \\ \hline
+		redis-test               & default         & 100,00 & 159,49 & 314,92  & 105,24                         & 115,80 \\
+		redis-test               & min             & 100,00 & 165,90 & 307,94  & 106,16                         & 116,73 \\
+		redis-test               & max             & 100,00 & 213,38 & 314,09  & 105,67                         & 118,80 \\ \hline
+		\multicolumn{2}{l}{redis-test Schnitt}     & 100,00 & 179,59 & 312,32  & 105,69                         & 117,11 \\ \hline
+		tomcat                   & default         & 100,00 & 161,76 & 319,09  & 107,94                         & -      \\
+		tomcat                   & min             & 100,00 & 166,89 & 311,08  & 105,04                         & -      \\
+		tomcat                   & max             & 100,00 & 211,60 & 308,44  & 105,83                         & -      \\ \hline
+		\multicolumn{2}{l}{tomcat Schnitt}         & 100,00 & 180,08 & 312,87  & 106,27                         & -      \\ \hline
+		traefik                  & default         & 100,00 & 160,18 & 313,26  & 104,51                         & -      \\
+		traefik                  & min             & 100,00 & 168,45 & 316,26  & 105,79                         & -      \\
+		traefik                  & max             & 100,00 & 210,57 & 314,42  & 105,59                         & -      \\ \hline
+		\multicolumn{2}{l}{traefik Schnitt}        & 100,00 & 179,73 & 314,65  & 105,30                         & -      \\ \hline
+		ubuntu                   & default         & 100,00 & 176,58 & 349,26  & 106,05                         & -      \\
+		ubuntu                   & min             & 100,00 & 182,42 & 322,53  & 104,89                         & -      \\
+		ubuntu                   & max             & 100,00 & 230,74 & 331,27  & 105,28                         & -      \\ \hline
+		\multicolumn{2}{l}{ubuntu Schnitt}         & 100,00 & 196,58 & 334,35  & 105,41                         & -      \\ \hline
+		&                 &        &        &         &                                &        \\ \hline
+		\multicolumn{2}{l}{Schnitt}                & 100,00 & 183,02 & 316,31  & 104,99                         & 234,70 \\ 
+		\hline
+	\caption[Dauer des Startens eines Containers]{Dauer des Startens eines Containers, \footnotesize alle Angaben in Prozent, Werte kleiner 100 sind besser}
+	\label{tbl:timeuperfergebnis}
+	\end{longtable}
+\end{footnotesize}
+
+\section{Dauer des Entfernens eines Containers}
+\begin{footnotesize}
+	\begin{longtable}{llrrrrr}
+		\hline \spacedlowsmallcaps{Image} & \spacedlowsmallcaps{Limit} & \spacedlowsmallcaps{Docker} & \spacedlowsmallcaps{Kata} & \spacedlowsmallcaps{Kata FC} & \spacedlowsmallcaps{gVisor} & \spacedlowsmallcaps{Nabla} \\ 
+		\hline \endfirsthead 
+		\hline \spacedlowsmallcaps{Image} & \spacedlowsmallcaps{Limit} & \spacedlowsmallcaps{Docker} & \spacedlowsmallcaps{Kata} & \spacedlowsmallcaps{Kata FC} & \spacedlowsmallcaps{gVisor} & \spacedlowsmallcaps{Nabla} \\ 
+		\hline \endhead
+		alpine                   & default         & 100,00 & 140,14 & 128,67  & \cellcolor[HTML]{C0C0C0}100,00 & -     \\
+		alpine                   & min             & 100,00 & 141,62 & 177,95  & \cellcolor[HTML]{C0C0C0}100,00 & -     \\
+		alpine                   & max             & 100,00 & 147,46 & 151,96  & \cellcolor[HTML]{C0C0C0}100,00 & -     \\ \hline
+		\multicolumn{2}{l}{alpine Schnitt}         & 100,00 & 143,07 & 152,86  & 100,00                         & -     \\ \hline
+		busybox                  & default         & 100,00 & 140,40 & 152,98  & \cellcolor[HTML]{C0C0C0}100,00 & -     \\
+		busybox                  & min             & 100,00 & 144,17 & 179,75  & \cellcolor[HTML]{C0C0C0}100,00 & -     \\
+		busybox                  & max             & 100,00 & 152,10 & 144,57  & \cellcolor[HTML]{C0C0C0}100,00 & -     \\ \hline
+		\multicolumn{2}{l}{busybox Schnitt}        & 100,00 & 145,56 & 159,10  & 100,00                         & -     \\ \hline
+		go-httpd                 & default         & 100,00 & 135,98 & 157,03  & 110,09                         & 78,58 \\
+		go-httpd                 & min             & 100,00 & 124,31 & 154,65  & \cellcolor[HTML]{C0C0C0}100,00 & 72,03 \\
+		go-httpd                 & max             & 100,00 & 127,72 & 154,30  & 107,53                         & 74,22 \\ \hline
+		\multicolumn{2}{l}{go-httpd Schnitt}       & 100,00 & 129,34 & 155,33  & 105,87                         & 74,94 \\ \hline
+		httpd                    & default         & 100,00 & 138,83 & 178,08  & 108,10                         & -     \\
+		httpd                    & min             & 100,00 & 141,42 & 175,44  & 110,74                         & -     \\
+		httpd                    & max             & 100,00 & 146,22 & 180,11  & 109,11                         & -     \\ \hline
+		\multicolumn{2}{l}{httpd Schnitt}          & 100,00 & 142,16 & 177,88  & 109,32                         & -     \\ \hline
+		mongo                    & default         & 100,00 & 150,87 & 196,36  & 111,68                         & -     \\
+		mongo                    & min             & 100,00 & 148,88 & 208,48  & 110,91                         & -     \\
+		mongo                    & max             & 100,00 & 144,96 & 191,69  & 109,43                         & -     \\ \hline
+		\multicolumn{2}{l}{mongo Schnitt}          & 100,00 & 148,24 & 198,84  & 110,67                         & -     \\ \hline
+		nginx                    & default         & 100,00 & 136,29 & 174,80  & 110,13                         & -     \\
+		nginx                    & min             & 100,00 & 138,35 & 170,29  & 110,58                         & -     \\
+		nginx                    & max             & 100,00 & 136,08 & 171,71  & 108,84                         & -     \\ \hline
+		\multicolumn{2}{l}{nginx Schnitt}          & 100,00 & 136,91 & 172,27  & 109,85                         & -     \\ \hline
+		node-express             & default         & 100,00 & 136,43 & 174,93  & 108,31                         & 77,56 \\
+		node-express             & min             & 100,00 & 132,04 & 166,92  & 107,79                         & 66,37 \\
+		node-express             & max             & 100,00 & 136,26 & 173,67  & 107,83                         & 72,16 \\ \hline
+		\multicolumn{2}{l}{node-express Schnitt}   & 100,00 & 134,91 & 171,84  & 107,98                         & 72,03 \\ \hline
+		postgres                 & default         & 100,00 & 141,01 & 217,20  & 106,43                         & -     \\
+		postgres                 & min             & 100,00 & 141,85 & 189,42  & 105,34                         & -     \\
+		postgres                 & max             & 100,00 & 144,22 & 235,56  & 107,86                         & -     \\ \hline
+		\multicolumn{2}{l}{postgres Schnitt}       & 100,00 & 142,36 & 214,06  & 106,54                         & -     \\ \hline
+		python-tornado           & default         & 100,00 & 142,23 & 150,06  & 75,41                          & 57,44 \\
+		python-tornado           & min             & 100,00 & 182,47 & 167,82  & 82,99                          & 41,95 \\
+		python-tornado           & max             & 100,00 & 119,97 & 146,86  & 70,39                          & 45,90 \\ \hline
+		\multicolumn{2}{l}{python-tornado Schnitt} & 100,00 & 148,22 & 154,91  & 76,26                          & 48,43 \\ \hline
+		redis-test               & default         & 100,00 & 133,57 & 160,74  & 111,96                         & 56,88 \\
+		redis-test               & min             & 100,00 & 138,47 & 161,67  & 110,66                         & 48,68 \\
+		redis-test               & max             & 100,00 & 134,95 & 165,30  & 110,75                         & 53,85 \\ \hline
+		\multicolumn{2}{l}{redis-test Schnitt}     & 100,00 & 135,66 & 162,57  & 111,12                         & 53,14 \\ \hline
+		tomcat                   & default         & 100,00 & 136,01 & 175,55  & 109,63                         & -     \\
+		tomcat                   & min             & 100,00 & 134,84 & 169,63  & 104,99                         & -     \\
+		tomcat                   & max             & 100,00 & 134,28 & 175,95  & 106,37                         & -     \\ \hline
+		\multicolumn{2}{l}{tomcat Schnitt}         & 100,00 & 135,04 & 173,71  & 107,00                         & -     \\ \hline
+		traefik                  & default         & 100,00 & 140,22 & 183,08  & 110,33                         & -     \\
+		traefik                  & min             & 100,00 & 144,73 & 183,36  & 111,82                         & -     \\
+		traefik                  & max             & 100,00 & 141,56 & 186,13  & 111,80                         & -     \\ \hline
+		\multicolumn{2}{l}{traefik Schnitt}        & 100,00 & 142,17 & 184,19  & 111,32                         & -     \\ \hline
+		ubuntu                   & default         & 100,00 & 138,57 & 132,33  & 108,48                         & -     \\
+		ubuntu                   & min             & 100,00 & 141,58 & 176,20  & 108,23                         & -     \\
+		ubuntu                   & max             & 100,00 & 150,28 & 155,51  & 108,31                         & -     \\ \hline
+		\multicolumn{2}{l}{ubuntu Schnitt}         & 100,00 & 143,48 & 154,68  & 108,34                         & -     \\ \hline
+		&                 &        &        &         &                                &       \\ \hline
+		\multicolumn{2}{l}{Schnitt}                & 100,00 & 140,55 & 171,71  & 104,94                         & 62,14 \\ 
+		\hline
+		\caption[Dauer des Entfernens eines Containers]{Dauer des Entfernens eines Containers, \footnotesize alle Angaben in Prozent, Werte kleiner 100 sind besser}
+		\label{tbl:timermerfergebnis}
+	\end{longtable}
+\end{footnotesize}
+
+
+

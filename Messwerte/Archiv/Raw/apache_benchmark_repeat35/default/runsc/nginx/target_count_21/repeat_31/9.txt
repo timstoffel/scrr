@@ -1,0 +1,51 @@
+2020/01/16 05:00:11 Running: ab -c 100 -t 30 -n 1000000 http://192.168.3.100:8009/
+2020/01/16 05:00:41 This is ApacheBench, Version 2.3 <$Revision: 1843412 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+Benchmarking 192.168.3.100 (be patient)
+Finished 15694 requests
+Server Software:        nginx/1.17.7
+Server Hostname:        192.168.3.100
+Server Port:            8009
+Document Path:          /
+Document Length:        612 bytes
+{"connect":{"max":1046,"mean":5,"median":1,"min":0,"stdDev":30.700000762939453},"percentiles":{"100":3543,"50":202,"66":223,"75":237,"80":246,"90":267,"95":286,"98":324,"99":357},"processing":{"max":2503,"mean":184,"median":198,"min":10,"stdDev":89.9000015258789},"total":{"max":3543,"mean":189,"median":202,"min":17,"stdDev":101},"waiting":{"max":2503,"mean":179,"median":191,"min":9,"stdDev":89.19999694824219}}
+Concurrency Level:      100
+Time taken for tests:   30.000 seconds
+Complete requests:      15694
+Failed requests:        0
+Total transferred:      13261430 bytes
+HTML transferred:       9604728 bytes
+Requests per second:    523.13 [#/sec] (mean)
+Time per request:       191.157 [ms] (mean)
+Time per request:       1.912 [ms] (mean, across all concurrent requests)
+Transfer rate:          431.68 [Kbytes/sec] received
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    5  30.7      1    1046
+Processing:    10  184  89.9    198    2503
+Waiting:        9  179  89.2    191    2503
+Total:         17  189 101.0    202    3543
+Percentage of the requests served within a certain time (ms)
+  50%    202
+  66%    223
+  75%    237
+  80%    246
+  90%    267
+  95%    286
+  98%    324
+  99%    357
+ 100%   3543 (longest request)
+2020/01/16 05:00:41 Matched stat line [Connect:        0    5  30.7      1    1046 Connect 0 5 30.7 1 1046]
+2020/01/16 05:00:41 Matched stat line [Processing:    10  184  89.9    198    2503 Processing 10 184 89.9 198 2503]
+2020/01/16 05:00:41 Matched stat line [Waiting:        9  179  89.2    191    2503 Waiting 9 179 89.2 191 2503]
+2020/01/16 05:00:41 Matched stat line [Total:         17  189 101.0    202    3543 Total 17 189 101.0 202 3543]
+2020/01/16 05:00:41 Matched percentline [  50%    202 50 202]
+2020/01/16 05:00:41 Matched percentline [  66%    223 66 223]
+2020/01/16 05:00:41 Matched percentline [  75%    237 75 237]
+2020/01/16 05:00:41 Matched percentline [  80%    246 80 246]
+2020/01/16 05:00:41 Matched percentline [  90%    267 90 267]
+2020/01/16 05:00:41 Matched percentline [  95%    286 95 286]
+2020/01/16 05:00:41 Matched percentline [  98%    324 98 324]
+2020/01/16 05:00:41 Matched percentline [  99%    357 99 357]
+2020/01/16 05:00:41 Matched percentline [ 100%   3543 100 3543]

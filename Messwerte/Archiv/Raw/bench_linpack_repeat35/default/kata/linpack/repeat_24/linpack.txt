@@ -1,0 +1,450 @@
+================================================================================
+HPLinpack 2.3  --  High-Performance Linpack benchmark  --   December 2, 2018
+Written by A. Petitet and R. Clint Whaley,  Innovative Computing Laboratory, UTK
+Modified by Piotr Luszczek, Innovative Computing Laboratory, UTK
+Modified by Julien Langou, University of Colorado Denver
+================================================================================
+
+An explanation of the input/output parameters follows:
+T/V    : Wall time / encoded variant.
+N      : The order of the coefficient matrix A.
+NB     : The partitioning blocking factor.
+P      : The number of process rows.
+Q      : The number of process columns.
+Time   : Time in seconds to solve the linear system.
+Gflops : Rate of execution for solving the linear system.
+
+The following parameter values will be used:
+
+N      :   10000 
+NB     :     232 
+PMAP   : Row-major process mapping
+P      :       2 
+Q      :       2 
+PFACT  :   Right 
+NBMIN  :       4 
+NDIV   :       2 
+RFACT  :   Crout 
+BCAST  :  1ringM 
+DEPTH  :       1 
+SWAP   : Mix (threshold = 64)
+L1     : transposed form
+U      : transposed form
+EQUIL  : yes
+ALIGN  : 8 double precision words
+
+--------------------------------------------------------------------------------
+
+- The matrix A is randomly generated for each test.
+- The following scaled residual check will be computed:
+      ||Ax-b||_oo / ( eps * ( || x ||_oo * || A ||_oo + || b ||_oo ) * N )
+- The relative machine precision (eps) is taken to be               1.110223e-16
+- Computational tests pass if scaled residuals are less than                16.0
+
+[5db2e4aea390:00014] Read -1, expected 185600, errno = 38
+[5db2e4aea390:00012] Read -1, expected 185600, errno = 38
+[5db2e4aea390:00014] Read -1, expected 244992, errno = 38
+[5db2e4aea390:00013] Read -1, expected 3897600, errno = 38
+[5db2e4aea390:00013] Read -1, expected 5144832, errno = 38
+[5db2e4aea390:00011] Read -1, expected 3897600, errno = 38
+[5db2e4aea390:00014] Read -1, expected 3732000, errno = 38
+[5db2e4aea390:00014] Read -1, expected 4926240, errno = 38
+[5db2e4aea390:00012] Read -1, expected 3732000, errno = 38
+[5db2e4aea390:00011] Read -1, expected 207872, errno = 38
+[5db2e4aea390:00013] Read -1, expected 207872, errno = 38
+[5db2e4aea390:00011] Read -1, expected 222720, errno = 38
+[5db2e4aea390:00012] Read -1, expected 4179840, errno = 38
+[5db2e4aea390:00012] Read -1, expected 4478400, errno = 38
+[5db2e4aea390:00014] Read -1, expected 4179840, errno = 38
+[5db2e4aea390:00011] Read -1, expected 4157440, errno = 38
+[5db2e4aea390:00011] Read -1, expected 4454400, errno = 38
+[5db2e4aea390:00013] Read -1, expected 4157440, errno = 38
+[5db2e4aea390:00014] Read -1, expected 215296, errno = 38
+[5db2e4aea390:00012] Read -1, expected 215296, errno = 38
+[5db2e4aea390:00014] Read -1, expected 215296, errno = 38
+[5db2e4aea390:00013] Read -1, expected 4305920, errno = 38
+[5db2e4aea390:00013] Read -1, expected 4305920, errno = 38
+[5db2e4aea390:00011] Read -1, expected 4305920, errno = 38
+[5db2e4aea390:00014] Read -1, expected 4113824, errno = 38
+[5db2e4aea390:00014] Read -1, expected 4113824, errno = 38
+[5db2e4aea390:00012] Read -1, expected 4113824, errno = 38
+[5db2e4aea390:00011] Read -1, expected 220864, errno = 38
+[5db2e4aea390:00013] Read -1, expected 220864, errno = 38
+[5db2e4aea390:00011] Read -1, expected 209728, errno = 38
+[5db2e4aea390:00012] Read -1, expected 4220216, errno = 38
+[5db2e4aea390:00011] Read -1, expected 4196416, errno = 38
+[5db2e4aea390:00012] Read -1, expected 4007432, errno = 38
+[5db2e4aea390:00014] Read -1, expected 4220216, errno = 38
+[5db2e4aea390:00011] Read -1, expected 3984832, errno = 38
+[5db2e4aea390:00013] Read -1, expected 4196416, errno = 38
+[5db2e4aea390:00014] Read -1, expected 191168, errno = 38
+[5db2e4aea390:00012] Read -1, expected 191168, errno = 38
+[5db2e4aea390:00014] Read -1, expected 239424, errno = 38
+[5db2e4aea390:00013] Read -1, expected 3632192, errno = 38
+[5db2e4aea390:00013] Read -1, expected 4549056, errno = 38
+[5db2e4aea390:00011] Read -1, expected 3632192, errno = 38
+[5db2e4aea390:00014] Read -1, expected 3461624, errno = 38
+[5db2e4aea390:00012] Read -1, expected 3461624, errno = 38
+[5db2e4aea390:00014] Read -1, expected 4335432, errno = 38
+[5db2e4aea390:00011] Read -1, expected 215296, errno = 38
+[5db2e4aea390:00013] Read -1, expected 215296, errno = 38
+[5db2e4aea390:00011] Read -1, expected 215296, errno = 38
+[5db2e4aea390:00012] Read -1, expected 3898528, errno = 38
+[5db2e4aea390:00011] Read -1, expected 3875328, errno = 38
+[5db2e4aea390:00012] Read -1, expected 3898528, errno = 38
+[5db2e4aea390:00014] Read -1, expected 3898528, errno = 38
+[5db2e4aea390:00011] Read -1, expected 3875328, errno = 38
+[5db2e4aea390:00013] Read -1, expected 3875328, errno = 38
+[5db2e4aea390:00014] Read -1, expected 220864, errno = 38
+[5db2e4aea390:00012] Read -1, expected 220864, errno = 38
+[5db2e4aea390:00014] Read -1, expected 209728, errno = 38
+[5db2e4aea390:00013] Read -1, expected 3975552, errno = 38
+[5db2e4aea390:00013] Read -1, expected 3775104, errno = 38
+[5db2e4aea390:00011] Read -1, expected 3975552, errno = 38
+[5db2e4aea390:00014] Read -1, expected 3778488, errno = 38
+[5db2e4aea390:00014] Read -1, expected 3587976, errno = 38
+[5db2e4aea390:00012] Read -1, expected 3778488, errno = 38
+[5db2e4aea390:00011] Read -1, expected 202304, errno = 38
+[5db2e4aea390:00013] Read -1, expected 202304, errno = 38
+[5db2e4aea390:00011] Read -1, expected 228288, errno = 38
+[5db2e4aea390:00012] Read -1, expected 3460968, errno = 38
+[5db2e4aea390:00012] Read -1, expected 3905496, errno = 38
+[5db2e4aea390:00014] Read -1, expected 3460968, errno = 38
+[5db2e4aea390:00011] Read -1, expected 3439168, errno = 38
+[5db2e4aea390:00011] Read -1, expected 3880896, errno = 38
+[5db2e4aea390:00013] Read -1, expected 3439168, errno = 38
+[5db2e4aea390:00014] Read -1, expected 181888, errno = 38
+[5db2e4aea390:00012] Read -1, expected 181888, errno = 38
+[5db2e4aea390:00014] Read -1, expected 248704, errno = 38
+[5db2e4aea390:00013] Read -1, expected 3092096, errno = 38
+[5db2e4aea390:00013] Read -1, expected 4227968, errno = 38
+[5db2e4aea390:00011] Read -1, expected 3092096, errno = 38
+[5db2e4aea390:00014] Read -1, expected 2929808, errno = 38
+[5db2e4aea390:00014] Read -1, expected 4006064, errno = 38
+[5db2e4aea390:00012] Read -1, expected 2929808, errno = 38
+[5db2e4aea390:00011] Read -1, expected 233856, errno = 38
+[5db2e4aea390:00013] Read -1, expected 233856, errno = 38
+[5db2e4aea390:00011] Read -1, expected 196736, errno = 38
+[5db2e4aea390:00012] Read -1, expected 3766896, errno = 38
+[5db2e4aea390:00012] Read -1, expected 3168976, errno = 38
+[5db2e4aea390:00014] Read -1, expected 3766896, errno = 38
+[5db2e4aea390:00011] Read -1, expected 3741696, errno = 38
+[5db2e4aea390:00011] Read -1, expected 3147776, errno = 38
+[5db2e4aea390:00013] Read -1, expected 3741696, errno = 38
+[5db2e4aea390:00014] Read -1, expected 217152, errno = 38
+[5db2e4aea390:00012] Read -1, expected 217152, errno = 38
+[5db2e4aea390:00014] Read -1, expected 213440, errno = 38
+[5db2e4aea390:00013] Read -1, expected 3474432, errno = 38
+[5db2e4aea390:00011] Read -1, expected 3474432, errno = 38
+[5db2e4aea390:00013] Read -1, expected 3415040, errno = 38
+[5db2e4aea390:00014] Read -1, expected 3280680, errno = 38
+[5db2e4aea390:00014] Read -1, expected 3224600, errno = 38
+[5db2e4aea390:00012] Read -1, expected 3280680, errno = 38
+[5db2e4aea390:00011] Read -1, expected 233856, errno = 38
+[5db2e4aea390:00013] Read -1, expected 233856, errno = 38
+[5db2e4aea390:00011] Read -1, expected 196736, errno = 38
+[5db2e4aea390:00012] Read -1, expected 3533040, errno = 38
+[5db2e4aea390:00011] Read -1, expected 3507840, errno = 38
+[5db2e4aea390:00012] Read -1, expected 2972240, errno = 38
+[5db2e4aea390:00014] Read -1, expected 3533040, errno = 38
+[5db2e4aea390:00011] Read -1, expected 2951040, errno = 38
+[5db2e4aea390:00013] Read -1, expected 3507840, errno = 38
+[5db2e4aea390:00014] Read -1, expected 207872, errno = 38
+[5db2e4aea390:00012] Read -1, expected 207872, errno = 38
+[5db2e4aea390:00014] Read -1, expected 222720, errno = 38
+[5db2e4aea390:00013] Read -1, expected 3118080, errno = 38
+[5db2e4aea390:00011] Read -1, expected 3118080, errno = 38
+[5db2e4aea390:00013] Read -1, expected 3340800, errno = 38
+[5db2e4aea390:00014] Read -1, expected 2932608, errno = 38
+[5db2e4aea390:00014] Read -1, expected 3142080, errno = 38
+[5db2e4aea390:00012] Read -1, expected 2932608, errno = 38
+[5db2e4aea390:00011] Read -1, expected 222720, errno = 38
+[5db2e4aea390:00013] Read -1, expected 222720, errno = 38
+[5db2e4aea390:00011] Read -1, expected 207872, errno = 38
+[5db2e4aea390:00012] Read -1, expected 3142080, errno = 38
+[5db2e4aea390:00012] Read -1, expected 2932608, errno = 38
+[5db2e4aea390:00014] Read -1, expected 3142080, errno = 38
+[5db2e4aea390:00011] Read -1, expected 3118080, errno = 38
+[5db2e4aea390:00011] Read -1, expected 2910208, errno = 38
+[5db2e4aea390:00013] Read -1, expected 3118080, errno = 38
+[5db2e4aea390:00014] Read -1, expected 196736, errno = 38
+[5db2e4aea390:00014] Read -1, expected 233856, errno = 38
+[5db2e4aea390:00012] Read -1, expected 196736, errno = 38
+[5db2e4aea390:00013] Read -1, expected 2754304, errno = 38
+[5db2e4aea390:00013] Read -1, expected 3273984, errno = 38
+[5db2e4aea390:00011] Read -1, expected 2754304, errno = 38
+[5db2e4aea390:00014] Read -1, expected 2578768, errno = 38
+[5db2e4aea390:00012] Read -1, expected 2578768, errno = 38
+[5db2e4aea390:00014] Read -1, expected 3065328, errno = 38
+[5db2e4aea390:00011] Read -1, expected 222720, errno = 38
+[5db2e4aea390:00013] Read -1, expected 222720, errno = 38
+[5db2e4aea390:00011] Read -1, expected 207872, errno = 38
+[5db2e4aea390:00012] Read -1, expected 2919360, errno = 38
+[5db2e4aea390:00014] Read -1, expected 2919360, errno = 38
+[5db2e4aea390:00011] Read -1, expected 2895360, errno = 38
+[5db2e4aea390:00012] Read -1, expected 2724736, errno = 38
+[5db2e4aea390:00011] Read -1, expected 2702336, errno = 38
+[5db2e4aea390:00013] Read -1, expected 2895360, errno = 38
+[5db2e4aea390:00014] Read -1, expected 202304, errno = 38
+[5db2e4aea390:00012] Read -1, expected 202304, errno = 38
+[5db2e4aea390:00014] Read -1, expected 228288, errno = 38
+[5db2e4aea390:00013] Read -1, expected 2629952, errno = 38
+[5db2e4aea390:00013] Read -1, expected 2967744, errno = 38
+[5db2e4aea390:00011] Read -1, expected 2629952, errno = 38
+[5db2e4aea390:00014] Read -1, expected 2449448, errno = 38
+[5db2e4aea390:00012] Read -1, expected 2449448, errno = 38
+[5db2e4aea390:00014] Read -1, expected 2764056, errno = 38
+[5db2e4aea390:00011] Read -1, expected 220864, errno = 38
+[5db2e4aea390:00013] Read -1, expected 220864, errno = 38
+[5db2e4aea390:00011] Read -1, expected 209728, errno = 38
+[5db2e4aea390:00012] Read -1, expected 2674168, errno = 38
+[5db2e4aea390:00014] Read -1, expected 2674168, errno = 38
+[5db2e4aea390:00011] Read -1, expected 2650368, errno = 38
+[5db2e4aea390:00012] Read -1, expected 2539336, errno = 38
+[5db2e4aea390:00011] Read -1, expected 2516736, errno = 38
+[5db2e4aea390:00013] Read -1, expected 2650368, errno = 38
+[5db2e4aea390:00014] Read -1, expected 207872, errno = 38
+[5db2e4aea390:00012] Read -1, expected 207872, errno = 38
+[5db2e4aea390:00014] Read -1, expected 222720, errno = 38
+[5db2e4aea390:00013] Read -1, expected 2494464, errno = 38
+[5db2e4aea390:00013] Read -1, expected 2672640, errno = 38
+[5db2e4aea390:00011] Read -1, expected 2494464, errno = 38
+[5db2e4aea390:00014] Read -1, expected 2308992, errno = 38
+[5db2e4aea390:00014] Read -1, expected 2473920, errno = 38
+[5db2e4aea390:00012] Read -1, expected 2308992, errno = 38
+[5db2e4aea390:00011] Read -1, expected 193024, errno = 38
+[5db2e4aea390:00013] Read -1, expected 193024, errno = 38
+[5db2e4aea390:00011] Read -1, expected 237568, errno = 38
+[5db2e4aea390:00012] Read -1, expected 2144064, errno = 38
+[5db2e4aea390:00012] Read -1, expected 2638848, errno = 38
+[5db2e4aea390:00014] Read -1, expected 2144064, errno = 38
+[5db2e4aea390:00011] Read -1, expected 2123264, errno = 38
+[5db2e4aea390:00011] Read -1, expected 2613248, errno = 38
+[5db2e4aea390:00013] Read -1, expected 2123264, errno = 38
+[5db2e4aea390:00014] Read -1, expected 217152, errno = 38
+[5db2e4aea390:00012] Read -1, expected 217152, errno = 38
+[5db2e4aea390:00014] Read -1, expected 213440, errno = 38
+[5db2e4aea390:00013] Read -1, expected 2388672, errno = 38
+[5db2e4aea390:00013] Read -1, expected 2347840, errno = 38
+[5db2e4aea390:00011] Read -1, expected 2388672, errno = 38
+[5db2e4aea390:00014] Read -1, expected 2194920, errno = 38
+[5db2e4aea390:00014] Read -1, expected 2157400, errno = 38
+[5db2e4aea390:00012] Read -1, expected 2194920, errno = 38
+[5db2e4aea390:00011] Read -1, expected 202304, errno = 38
+[5db2e4aea390:00013] Read -1, expected 202304, errno = 38
+[5db2e4aea390:00011] Read -1, expected 228288, errno = 38
+[5db2e4aea390:00012] Read -1, expected 2044840, errno = 38
+[5db2e4aea390:00011] Read -1, expected 2023040, errno = 38
+[5db2e4aea390:00012] Read -1, expected 2307480, errno = 38
+[5db2e4aea390:00014] Read -1, expected 2044840, errno = 38
+[5db2e4aea390:00013] Read -1, expected 2023040, errno = 38
+[5db2e4aea390:00011] Read -1, expected 2282880, errno = 38
+[5db2e4aea390:00014] Read -1, expected 202304, errno = 38
+[5db2e4aea390:00012] Read -1, expected 202304, errno = 38
+[5db2e4aea390:00014] Read -1, expected 228288, errno = 38
+[5db2e4aea390:00013] Read -1, expected 2023040, errno = 38
+[5db2e4aea390:00011] Read -1, expected 2023040, errno = 38
+[5db2e4aea390:00013] Read -1, expected 2282880, errno = 38
+[5db2e4aea390:00014] Read -1, expected 1842536, errno = 38
+[5db2e4aea390:00012] Read -1, expected 1842536, errno = 38
+[5db2e4aea390:00014] Read -1, expected 2079192, errno = 38
+[5db2e4aea390:00011] Read -1, expected 207872, errno = 38
+[5db2e4aea390:00013] Read -1, expected 207872, errno = 38
+[5db2e4aea390:00011] Read -1, expected 222720, errno = 38
+[5db2e4aea390:00012] Read -1, expected 1893248, errno = 38
+[5db2e4aea390:00014] Read -1, expected 1893248, errno = 38
+[5db2e4aea390:00011] Read -1, expected 1870848, errno = 38
+[5db2e4aea390:00012] Read -1, expected 2028480, errno = 38
+[5db2e4aea390:00013] Read -1, expected 1870848, errno = 38
+[5db2e4aea390:00011] Read -1, expected 2004480, errno = 38
+[5db2e4aea390:00014] Read -1, expected 176320, errno = 38
+[5db2e4aea390:00013] Read -1, expected 1586880, errno = 38
+[5db2e4aea390:00012] Read -1, expected 176320, errno = 38
+[5db2e4aea390:00014] Read -1, expected 254272, errno = 38
+[5db2e4aea390:00011] Read -1, expected 1586880, errno = 38
+[5db2e4aea390:00013] Read -1, expected 2288448, errno = 38
+[5db2e4aea390:00014] Read -1, expected 1429560, errno = 38
+[5db2e4aea390:00012] Read -1, expected 1429560, errno = 38
+[5db2e4aea390:00014] Read -1, expected 2061576, errno = 38
+[5db2e4aea390:00011] Read -1, expected 254272, errno = 38
+[5db2e4aea390:00013] Read -1, expected 254272, errno = 38
+[5db2e4aea390:00011] Read -1, expected 176320, errno = 38
+[5db2e4aea390:00012] Read -1, expected 2061576, errno = 38
+[5db2e4aea390:00011] Read -1, expected 2034176, errno = 38
+[5db2e4aea390:00012] Read -1, expected 1429560, errno = 38
+[5db2e4aea390:00014] Read -1, expected 2061576, errno = 38
+[5db2e4aea390:00011] Read -1, expected 1410560, errno = 38
+[5db2e4aea390:00013] Read -1, expected 2034176, errno = 38
+[5db2e4aea390:00014] Read -1, expected 222720, errno = 38
+[5db2e4aea390:00012] Read -1, expected 222720, errno = 38
+[5db2e4aea390:00014] Read -1, expected 207872, errno = 38
+[5db2e4aea390:00013] Read -1, expected 1781760, errno = 38
+[5db2e4aea390:00013] Read -1, expected 1662976, errno = 38
+[5db2e4aea390:00011] Read -1, expected 1781760, errno = 38
+[5db2e4aea390:00014] Read -1, expected 1583040, errno = 38
+[5db2e4aea390:00012] Read -1, expected 1583040, errno = 38
+[5db2e4aea390:00014] Read -1, expected 1477504, errno = 38
+[5db2e4aea390:00011] Read -1, expected 220864, errno = 38
+[5db2e4aea390:00013] Read -1, expected 220864, errno = 38
+[5db2e4aea390:00011] Read -1, expected 209728, errno = 38
+[5db2e4aea390:00012] Read -1, expected 1569848, errno = 38
+[5db2e4aea390:00014] Read -1, expected 1569848, errno = 38
+[5db2e4aea390:00011] Read -1, expected 1546048, errno = 38
+[5db2e4aea390:00012] Read -1, expected 1490696, errno = 38
+[5db2e4aea390:00013] Read -1, expected 1546048, errno = 38
+[5db2e4aea390:00011] Read -1, expected 1468096, errno = 38
+[5db2e4aea390:00014] Read -1, expected 189312, errno = 38
+[5db2e4aea390:00012] Read -1, expected 189312, errno = 38
+[5db2e4aea390:00014] Read -1, expected 241280, errno = 38
+[5db2e4aea390:00013] Read -1, expected 1325184, errno = 38
+[5db2e4aea390:00011] Read -1, expected 1325184, errno = 38
+[5db2e4aea390:00013] Read -1, expected 1688960, errno = 38
+[5db2e4aea390:00014] Read -1, expected 1156272, errno = 38
+[5db2e4aea390:00012] Read -1, expected 1156272, errno = 38
+[5db2e4aea390:00014] Read -1, expected 1473680, errno = 38
+[5db2e4aea390:00011] Read -1, expected 211584, errno = 38
+[5db2e4aea390:00013] Read -1, expected 211584, errno = 38
+[5db2e4aea390:00011] Read -1, expected 219008, errno = 38
+[5db2e4aea390:00012] Read -1, expected 1292304, errno = 38
+[5db2e4aea390:00014] Read -1, expected 1292304, errno = 38
+[5db2e4aea390:00011] Read -1, expected 1269504, errno = 38
+[5db2e4aea390:00012] Read -1, expected 1337648, errno = 38
+[5db2e4aea390:00013] Read -1, expected 1269504, errno = 38
+[5db2e4aea390:00011] Read -1, expected 1314048, errno = 38
+[5db2e4aea390:00014] Read -1, expected 202304, errno = 38
+[5db2e4aea390:00013] Read -1, expected 1213824, errno = 38
+[5db2e4aea390:00012] Read -1, expected 202304, errno = 38
+[5db2e4aea390:00014] Read -1, expected 228288, errno = 38
+[5db2e4aea390:00011] Read -1, expected 1213824, errno = 38
+[5db2e4aea390:00013] Read -1, expected 1369728, errno = 38
+[5db2e4aea390:00014] Read -1, expected 1033320, errno = 38
+[5db2e4aea390:00012] Read -1, expected 1033320, errno = 38
+[5db2e4aea390:00014] Read -1, expected 1166040, errno = 38
+[5db2e4aea390:00011] Read -1, expected 224576, errno = 38
+[5db2e4aea390:00013] Read -1, expected 224576, errno = 38
+[5db2e4aea390:00011] Read -1, expected 206016, errno = 38
+[5db2e4aea390:00012] Read -1, expected 1147080, errno = 38
+[5db2e4aea390:00014] Read -1, expected 1147080, errno = 38
+[5db2e4aea390:00011] Read -1, expected 1122880, errno = 38
+[5db2e4aea390:00012] Read -1, expected 1052280, errno = 38
+[5db2e4aea390:00013] Read -1, expected 1122880, errno = 38
+[5db2e4aea390:00011] Read -1, expected 1030080, errno = 38
+[5db2e4aea390:00014] Read -1, expected 224576, errno = 38
+[5db2e4aea390:00013] Read -1, expected 1122880, errno = 38
+[5db2e4aea390:00012] Read -1, expected 224576, errno = 38
+[5db2e4aea390:00014] Read -1, expected 206016, errno = 38
+[5db2e4aea390:00011] Read -1, expected 1122880, errno = 38
+[5db2e4aea390:00013] Read -1, expected 1030080, errno = 38
+[5db2e4aea390:00014] Read -1, expected 922504, errno = 38
+[5db2e4aea390:00012] Read -1, expected 922504, errno = 38
+[5db2e4aea390:00014] Read -1, expected 846264, errno = 38
+[5db2e4aea390:00011] Read -1, expected 204160, errno = 38
+[5db2e4aea390:00013] Read -1, expected 204160, errno = 38
+[5db2e4aea390:00011] Read -1, expected 226432, errno = 38
+[5db2e4aea390:00012] Read -1, expected 838640, errno = 38
+[5db2e4aea390:00014] Read -1, expected 838640, errno = 38
+[5db2e4aea390:00011] Read -1, expected 816640, errno = 38
+[5db2e4aea390:00012] Read -1, expected 930128, errno = 38
+[5db2e4aea390:00013] Read -1, expected 816640, errno = 38
+[5db2e4aea390:00011] Read -1, expected 905728, errno = 38
+[5db2e4aea390:00014] Read -1, expected 206016, errno = 38
+[5db2e4aea390:00013] Read -1, expected 824064, errno = 38
+[5db2e4aea390:00014] Read -1, expected 224576, errno = 38
+[5db2e4aea390:00012] Read -1, expected 206016, errno = 38
+[5db2e4aea390:00011] Read -1, expected 824064, errno = 38
+[5db2e4aea390:00013] Read -1, expected 898304, errno = 38
+[5db2e4aea390:00014] Read -1, expected 640248, errno = 38
+[5db2e4aea390:00012] Read -1, expected 640248, errno = 38
+[5db2e4aea390:00014] Read -1, expected 697928, errno = 38
+[5db2e4aea390:00011] Read -1, expected 209728, errno = 38
+[5db2e4aea390:00013] Read -1, expected 209728, errno = 38
+[5db2e4aea390:00011] Read -1, expected 220864, errno = 38
+[5db2e4aea390:00012] Read -1, expected 651784, errno = 38
+[5db2e4aea390:00012] Read -1, expected 686392, errno = 38
+[5db2e4aea390:00011] Read -1, expected 629184, errno = 38
+[5db2e4aea390:00013] Read -1, expected 629184, errno = 38
+[5db2e4aea390:00014] Read -1, expected 651784, errno = 38
+[5db2e4aea390:00011] Read -1, expected 662592, errno = 38
+[5db2e4aea390:00014] Read -1, expected 148480, errno = 38
+[5db2e4aea390:00013] Read -1, expected 445440, errno = 38
+[5db2e4aea390:00012] Read -1, expected 148480, errno = 38
+[5db2e4aea390:00014] Read -1, expected 282112, errno = 38
+[5db2e4aea390:00011] Read -1, expected 445440, errno = 38
+[5db2e4aea390:00013] Read -1, expected 846336, errno = 38
+[5db2e4aea390:00011] Read -1, expected 220864, errno = 38
+[5db2e4aea390:00014] Read -1, expected 312960, errno = 38
+[5db2e4aea390:00011] Read -1, expected 209728, errno = 38
+[5db2e4aea390:00013] Read -1, expected 220864, errno = 38
+[5db2e4aea390:00012] Read -1, expected 312960, errno = 38
+[5db2e4aea390:00014] Read -1, expected 594624, errno = 38
+[5db2e4aea390:00012] Read -1, expected 465528, errno = 38
+[5db2e4aea390:00012] Read -1, expected 442056, errno = 38
+[5db2e4aea390:00011] Read -1, expected 441728, errno = 38
+[5db2e4aea390:00011] Read -1, expected 419456, errno = 38
+[5db2e4aea390:00013] Read -1, expected 441728, errno = 38
+[5db2e4aea390:00014] Read -1, expected 465528, errno = 38
+[5db2e4aea390:00014] Read -1, expected 154048, errno = 38
+[5db2e4aea390:00013] Read -1, expected 308096, errno = 38
+[5db2e4aea390:00011] Read -1, expected 308096, errno = 38
+[5db2e4aea390:00013] Read -1, expected 553088, errno = 38
+[5db2e4aea390:00012] Read -1, expected 154048, errno = 38
+[5db2e4aea390:00014] Read -1, expected 276544, errno = 38
+[5db2e4aea390:00011] Read -1, expected 213440, errno = 38
+[5db2e4aea390:00014] Read -1, expected 170648, errno = 38
+[5db2e4aea390:00012] Read -1, expected 170648, errno = 38
+[5db2e4aea390:00014] Read -1, expected 306344, errno = 38
+[5db2e4aea390:00011] Read -1, expected 217152, errno = 38
+[5db2e4aea390:00013] Read -1, expected 213440, errno = 38
+[5db2e4aea390:00012] Read -1, expected 236440, errno = 38
+[5db2e4aea390:00014] Read -1, expected 236440, errno = 38
+[5db2e4aea390:00012] Read -1, expected 240552, errno = 38
+[5db2e4aea390:00014] Read -1, expected 165184, errno = 38
+[5db2e4aea390:00011] Read -1, expected 213440, errno = 38
+[5db2e4aea390:00011] Read -1, expected 217152, errno = 38
+[5db2e4aea390:00013] Read -1, expected 213440, errno = 38
+[5db2e4aea390:00012] Read -1, expected 165184, errno = 38
+[5db2e4aea390:00014] Read -1, expected 265408, errno = 38
+[5db2e4aea390:00013] Read -1, expected 165184, errno = 38
+[5db2e4aea390:00011] Read -1, expected 165184, errno = 38
+[5db2e4aea390:00013] Read -1, expected 265408, errno = 38
+[5db2e4aea390:00011] Read -1, expected 207872, errno = 38
+[5db2e4aea390:00012] Read -1, expected 18512, errno = 38
+[5db2e4aea390:00014] Read -1, expected 46400, errno = 38
+[5db2e4aea390:00011] Read -1, expected 222720, errno = 38
+[5db2e4aea390:00013] Read -1, expected 207872, errno = 38
+[5db2e4aea390:00012] Read -1, expected 46400, errno = 38
+[5db2e4aea390:00014] Read -1, expected 23296, errno = 38
+[5db2e4aea390:00012] Read -1, expected 432456, errno = 38
+[5db2e4aea390:00014] Read -1, expected 44544, errno = 38
+[5db2e4aea390:00011] Read -1, expected 4808, errno = 38
+[5db2e4aea390:00013] Read -1, expected 4808, errno = 38
+================================================================================
+T/V                N    NB     P     Q               Time                 Gflops
+--------------------------------------------------------------------------------
+WR11C2R4       10000   232     2     2              54.68             1.2195e+01
+HPL_pdgesv() start time Mon Feb 10 12:02:47 2020
+
+HPL_pdgesv() end time   Mon Feb 10 12:03:42 2020
+
+[5db2e4aea390:00012] Read -1, expected 39168, errno = 38
+[5db2e4aea390:00011] Read -1, expected 40832, errno = 38
+[5db2e4aea390:00013] Read -1, expected 39168, errno = 38
+[5db2e4aea390:00011] Read -1, expected 40832, errno = 38
+[5db2e4aea390:00012] Read -1, expected 39168, errno = 38
+[5db2e4aea390:00011] Read -1, expected 40832, errno = 38
+[5db2e4aea390:00011] Read -1, expected 40832, errno = 38
+[5db2e4aea390:00013] Read -1, expected 39168, errno = 38
+[5db2e4aea390:00013] Read -1, expected 39168, errno = 38
+[5db2e4aea390:00011] Read -1, expected 40832, errno = 38
+--------------------------------------------------------------------------------
+||Ax-b||_oo/(eps*(||A||_oo*||x||_oo+||b||_oo)*N)=   1.95471448e-03 ...... PASSED
+================================================================================
+
+Finished      1 tests with the following results:
+              1 tests completed and passed residual checks,
+              0 tests completed and failed residual checks,
+              0 tests skipped because of illegal input values.
+--------------------------------------------------------------------------------
+
+End of Tests.
+================================================================================

@@ -1,0 +1,306 @@
+\chapter{Kriterienkatalog}
+Für den Betrieb von Containern können verschiedene Technologien verwendet werden. Die am häufigsten verwendete Container Runtime ist derzeit Docker \cite[vgl.][5]{sysdig.2019}. Dazu werden Alternativen gesucht und mit Docker verglichen.
+Für diesen Vergleich wird die Methodik der Entscheidungsanalyse angewendet \cite[vgl.][S. 135 ff.]{Dittmer.2002}.
+Eine Entscheidung ist notwendig, um festzustellen, ob Docker die beste Option für den Containerbetrieb ist. Ziel ist es ein System zu finden das sicherer als Docker und gleichzeitig performant ist.
+
+Die Entscheidungsanalyse sieht vor, dass Alternativen definiert werden  \cite[vgl.][139]{Dittmer.2002}. Dies wird in Abschnitt \ref{sec:kandidatenauswahl} vorgenommen. Weiter wird ein Zielsystem in Form eines Kriterienkatalogs erstellt. Die Schwerpunkte liegen auf der Leistungsfähigkeit und Sicherheit. Die Leistung wird jeweils prozentual gegenüber Docker angegeben. Damit lassen sich neue Kandidaten auch bei geänderten Randbedingungen, wie dem Wechsel der Hardware, nachträglich ergänzen. Auch die Sicherheitsbewertung wird im Vergleich zu Docker vorgenommen und lässt sich auf andere Kandidaten übertragen. Zusätzlich wird bewertet, wie hoch die Kompatibilität zu den bestehenden Technologien Docker und Kubernetes ist.
+
+Anschließend sieht die Entscheidungsanalyse eine Zielgewichtung vor, die in Abschnitt \ref{sec:zielgewichtung} beschrieben wird. Die Gewichtung wird dabei mithilfe einer Matrix zur Bildung einer Reihenfolge vorgenommen \cite[vgl.][146]{Dittmer.2002}. Die Aufstellung der Kriterien reicht für eine Bewertung nicht aus, gerade im Bereich der Leistungsfähigkeit müssen dafür Kennzahlen erhoben werden. Diese Messungen werden in Kapitel \ref{sec:durchführung} durchgeführt. Anschließend werden diese Ergebnisse ausgewertet und in Abschnitt \ref{sec:bewertung} mithilfe der gewichteten Kriterien verwendet, um eine Bewertung vorzunehmen. \cite[vgl.][S. 151 f.]{Dittmer.2002}
+
+\section{Auswahl der Kandidaten}
+\label{sec:kandidatenauswahl}
+Um mit dem Kriterienkatalog die Kandidaten zu bewerten, müssen diese ausgewählt werden. An die Kandidaten werden verschiedene Anforderungen gestellt: Die Software soll OpenSource sein, um den Quellcode einsehen zu können. Es sollen andere Isolationsmechanismen als Namespaces, Control Groups oder Capabilities verwendet werden, da diese bei Docker eingesetzt werden und eine andere Isolierung verwendet werden soll. Die Kandidaten sollen ohne zusätzliche Software zu Kubernetes kompatibel sein, da Kubernetes derzeit die führende Container Orchestrierungssoftware ist \cite[][6]{sysdig.2019}. Weiter soll sich die Runtime in Docker ohne zusätzliche Software integrieren lassen, da Docker die meistverwendete Containerverwaltungssoftware ist \cite[][5]{sysdig.2019} und sich die Anwender nicht umgewöhnen müssen.
+
+Zusätzlich sollen die Kandidaten ein unterstütztes Projekt der \ac{CNCF} sein. Die \ac{CNCF} ist ein Projekt der Linux Foundation mit dem Ziel Open Source Software für Microservices und Container zu fördern  \cite[vgl.][]{CloudNativeComputingFoundation.2020}. Mit der Auswahl des Projektes durch die \ac{CNCF} ist sichergestellt, dass ein Review des Projektes erfolgt ist. Dadurch ist die Langlebigkeit der Software wahrscheinlich. 
+
+Die Softwareprojekte, die durch die \ac{CNCF} gefördert werden, sind im \ac{CNCF} Landscape \cite[vgl.][]{CNCF.20200220} aufgeführt. Im Bereich Container Runtimes sind die potenziellen Kandidaten zu finden. Zusätzlich wird Podman hinzugefügt, da es auch zur Ausführung von Containern geeignet ist. Podman befindet sich im Bereich "`App Definition and Development - Application Definition \& Image Build"'.
+
+Die Kandidaten aus dem \ac{CNCF} Landscape werden nach den Anforderungen OpenSource, andere Isolierung und Kompatibilität zu Docker und Kubernetes untersucht. Die Anforderungen werden eingangs erläutert. Das Resultat ist Tabelle \ref{tbl:kandidatenbewertung} zu entnehmen. Ein "`x"' steht für eine erfüllte und ein "`-"' für eine nicht erfüllte Anforderung. Kandidaten, die alle Anforderungen erfüllen, sind fett markiert.
+
+\begin{table}[h]
+	\myfloatalign
+	\small
+	\begin{tabularx}{\textwidth}{Xcccc} \hline
+		\spacedlowsmallcaps{Name} & \tableheadline{OpenSource} & \tableheadline{Isolierung} & \tableheadline{Kubernetes} & \tableheadline{Docker}\\ \hline
+		containerd       & x         & -                 & x                    & x                 \\
+		CRI-O            & x         & -                 & x                    & -                  \\
+		Firecracker      & x         & x                & -                     & -                  \\
+		\textbf{gVisor}           & x         & x                & x                    & x                 \\
+		\textbf{Kata}   & x         & x                & x                    & x                 \\
+		lxd              & x         & -                 & -                     & -                  \\
+		\textbf{Nabla}  & x         & x                & x                    & x                 \\
+		Pouch            & x         & x                & x                    & -                  \\
+		runc             & x         & -                 & x                    & x                 \\
+		Singularity      & x         & x                & x                    & -                  \\
+		SmartOS          & x         & x                & -                     & -                  \\
+		Unik             & x         & x                & x                    & -                 \\
+		podman           & x         & -                 & -                     & -                 \\
+		\hline
+	\end{tabularx}
+	\caption{Bewertung der Kandidaten nach Anforderungen}
+	\label{tbl:kandidatenbewertung}
+\end{table}
+
+Für die Untersuchung durch den Kriterienkatalog werden die Kandidaten Kata Containers, gVisor und Nabla Containers ausgewählt, da sie alle gestellten Anforderungen erfüllen.
+
+\section{Leistungsfähigkeit}
+Um die Leistungsfähigkeit der Kandidaten zu bewerten, werden verschiedene Tests zur Ermittlung durchgeführt. Die Messungen sollten viele Leistungsbereiche abdecken, um einen umfassenden Überblick zu geben. Gleichzeitig sollte der Aufwand den zeitlichen Rahmen der Arbeit nicht überschreiten.
+Container sind vielseitig einsetzbar, daher sind je nach Anwendung unterschiedliche Leistungskennwerte relevant. Die Häufigsten werden abgedeckt, indem die verbreitetsten Container von Docker Hub als Grundlage verwendet werden.
+Ein weiterer Schwerpunkt der Betrachtung liegt auf Webservern, da über eine einheitliche Schnittstelle die Leistung der Runtimes mit verschiedenen Programmiersprachen getestet werden kann. In den folgenden Abschnitten werden die verschieden Messmethoden dargelegt. Im anschließenden Kapitel wird detailliert auf die Durchführung der Messungen eingegangen. 
+
+Als Anwendungstest wird der Durchsatz von Webservern mit ApacheBench gemessen. Dabei wird der Arbeitsspeicherverbrauch erhoben. Für den Vergleich von Container Startzeiten werden verschiedene Container gestartet und die Startzeit gemessen. Der Prozess wird für das Entfernen von Containern wiederholt. Für die Messung der Netzwerkleistung wird mit der Software iPerf die Up- und Downloadrate ermittelt. Für einen CPU Benchmark wird das Programm Linpack verwendet. Weitere Messungen wie die Betrachtung von Festplattenperformanz oder die Untersuchung der Leistung von anderen Anwendungen werden in dieser Arbeit, aufgrund der Zeitbeschränkung nicht durchgeführt. Die verschiedenen Messungen werden in Tabelle \ref{tbl:messungen} zusammengefasst.
+
+\begin{table}[hbt]
+	\myfloatalign
+	\small
+	\begin{tabularx}{\textwidth}{X} \hline
+		\spacedlowsmallcaps{Messungen für die Bewertung der Leistungsfähigkeit} \\ \hline
+		Messungen für die Bewertung der Leistungsfähigkeit \\
+		Webserverleistung                                   \\
+		Arbeitsspeichernutzung                               \\
+		Dauer des Startens und Entfernens eines Containers  \\
+		Netzwerkbandbreite                                  \\
+		Prozessorleistung                                   \\
+		\hline
+	\end{tabularx}
+	\caption[Messungen zur Leistungsfähigkeit]{Übersicht der verschiedenen Messungen zur Leistungsfähigkeit}
+	\label{tbl:messungen}
+\end{table}
+
+\subsection{Einschränkungen}
+\label{sec:konzeptperformanzeinsch}
+Die Runtime Nabla Containers, vgl. \ref{nabla}, kann Docker Container Images nicht ausführen. Die Anwendungen müssen mit dem Unikernel gebaut und dann als Image gepackt werden. Das Nabla Projekt stellt einige Beispielimages in ihrem GitHub Repository \cite[vgl.][]{nablacontainers.20190326} zur Verfügung. Diese lassen sich für die Nabla Runtime und für alle anderen betrachteten Runtimes übersetzen.
+
+Um die Kandidaten zu vergleichen, werden die Beispielimages von Nabla für die Messung der Leistung verwendet. Die Tabelle \ref{tbl:nablaexampleimages} gibt einen Überblick über die verfügbaren Images. Von der Portierung anderer Programme für den Rumprun Kernel der Nabla Runtime wird aufgrund der begrenzten Dauer der Arbeit abgesehen.
+\newpage
+
+\begin{table}[h]
+	\myfloatalign
+	\small
+	\begin{tabularx}{\textwidth}{XX} \hline
+		\spacedlowsmallcaps{Image Name} & \spacedlowsmallcaps{Programmiersprache} \\ \hline
+		go-httpd & go\\
+		node-express & node.js\\
+		node-webrepl & node.js\\
+		python-tornado & python\\
+		redis-test & C\\
+		\hline
+	\end{tabularx}
+	\caption{Beispielimages von Nabla Containers}
+	\label{tbl:nablaexampleimages}
+	\footnotesize Quelle: GitHub Repository von Nabla Containers \cite[vgl.][]{nablacontainers.20190326}
+\end{table}
+
+Mit Docker ist es möglich, die Leistung von Containern zu beschränken. Dazu lässt sich beispielsweise der Zugriff auf die Anzahl der Prozessorkerne oder die Größe des Arbeitsspeichers begrenzen. Die Ressourcenlimitierung der einzelnen Kandidaten unterscheidet sich. In den Standardeinstellungen verwendet Kata zwei CPUs und 2048 MB Arbeitsspeicher für einen Container  \cite[vgl.][]{katacontainers.20190829}. Docker und gVisor limitieren die Ressourcennutzung von Containern nicht \cite[vgl.][]{DockerInc.2020, NicolasLacasse.20190531}. 
+
+Für Kata FC und Nabla sind die Limits nicht dokumentiert. Im Fall von Kata FC wird angenommen, dass die gleichen Beschränkungen wie bei Kata gelten. Für Nabla wird die Annahme getroffen, dass standardmäßig keine Limitierung angewendet wird. Die Tabelle \ref{tbl:resslimitsproruntime} stellt die Ressourcenlimits der einzelnen Runtimes gegenüber. Dabei steht "`-"' für keine Limitierung. Dieses Verhalten muss bei der Messung beachtet werden, damit die Ergebnisse vergleichbar sind. Zusätzlich wird geprüft, ob die Runtimes ohne entsprechende Dokumentation die Limitierungseinstellungen anwenden. Dies wird aus den Messergebnissen abgeleitet.
+
+\begin{table}[h]
+		\myfloatalign
+		\small
+		\begin{tabularx}{\textwidth}{Xlcc} \hline
+			\spacedlowsmallcaps{Name} & \spacedlowsmallcaps{Runtime} & \tableheadline{Anzahl CPUs} & \tableheadline{RAM in GB}\\ \hline
+			docker                        & runc    & - & - \\
+			gVisor                        & runsc   & - & -\\
+			Kata Containers       & kata    & 2 & 2 \\
+			Kata Containers - Firecracker & katafc  & 2 & 2 \\
+			Nabla container               & runnc   & - & - \\
+			\hline
+		\end{tabularx}
+	\caption{Übersicht Ressourcenlimits}
+	\label{tbl:resslimitsproruntime}
+\end{table}
+
+\subsection{Webserverleistung}
+\label{sec:webserverleistung}
+Als Anwendungstest wird die Leistung von Webservern mit den unterschiedlichen Runtimes untersucht. Webserver eignen sich für eine Messung besonders, da über eine einheitliche Schnittstelle die Leistung der Kandidaten mit verschiedenen Programmiersprachen getestet werden kann. Weiter wird Containervirtualisierung häufig für den Betrieb von Webanwendungen genutzt. HTTP Server und Reverse Proxys sind die häufigsten Anwendungsfälle von Containern \cite[vgl.][17]{sysdig.2019}. Damit ist die Betrachtung der Webserverleistung wichtig für die Gesamtleistung der Runtimes. 
+
+Die Messung wird dabei von ApacheBench vorgenommen. ApacheBench \cite[vgl.][]{apache.02.01.2020} ist ein Programm, um die Leistungsfähigkeit von HTTP Servern zu messen und ist in vielen Linux Distributionen verfügbar. Als zu messende Systeme werden die Webserver der Nabla Beispiel Images und die am häufigsten genutzten Webserver von Docker Hub verwendet. Da sich dieser Test unkompliziert parallelisieren lässt, wird auch das Verhalten der Runtimes bei dem Betrieb mehrerer Container beobachtet.
+
+\subsection{Arbeitsspeichernutzung}
+Während der Messung der Webserverleistung wird die Arbeitsspeichernutzung der Systeme erhoben. Diese Betrachtung ist wichtig, um zu prüfen, ob bei der Verwendung von einer anderen Runtime als Docker mehr oder weniger Arbeitsspeicher benötigt wird. Dementsprechend müsste für einen Einsatz in Produktivsystemen die Ausstattung der Server angepasst werden.
+
+Für die Untersuchung wird mit dem Programm free \cite[vgl.][]{procps.20200215} der genutzte Speicher gemessen. Auch hier werden die Messungen mit mehreren Containern im Parallelbetrieb wiederholt.
+
+\subsection{Dauer des Startens und Entfernens eines Containers}
+Häufig kommt Containervirtualisierung in Anwendungen mit Microservice Architekturen zum Einsatz. Dabei ist der Anteil der Container mit einer Lebensdauer von unter zehn Sekunden bei 22\% \cite[vgl.][23]{sysdig.2019}. Wenn ein Container kurz genutzt wird, ist ein schneller Start des Containers erheblich und damit die Untersuchung der Startzeit notwendig. Weiter belastet ein ungenutzter Container den Host unnötig. Daher ist ein schnelles Entfernen von Vorteil.
+
+Für diese Messungen werden nacheinander verschiedene Container gestartet und die Zeit gemessen, bis diese ansprechbar sind. Die Messung erfolgt dabei mit time \cite[vgl.][]{die.net.}.
+Für das Entfernen von Containern wird die Messung gleichermaßen durchgeführt.
+
+\subsection{Netzwerkbandbreite}
+In \ref{sec:webserverleistung} wird dargelegt, dass Containervirtualisierung häufig für den Betrieb von Webanwendungen genutzt wird. Die Leistung der Netzwerkschnittstelle beeinflusst direkt die Geschwindigkeit in der Anwendende die Webanwendung nutzen können. Daher ist es notwendig, die Leistung der Netzwerkschnittstelle in Form der Sende- und Empfangsleistung zu betrachten.  Die Software iPerf \cite[vgl.][]{Gueant.20200220} wird verwendet, um die Netzwerkleistung eines einzelnen Containers zu ermitteln. Dabei wird die Leistung für das Transmission Control Protocol (TCP) und das User Datagram Protocol (UDP) erhoben.
+
+\subsection{Prozessorleistung}
+Jede Berechnung einer Software wird im Prozessor durchgeführt. Damit hat die Prozessorleistung einen Einfluss auf die Geschwindigkeit jeder Anwendung. Da alle Kandidaten die Isolierung zwischen Hardware und der eigentlichen Anwendung erhöhen, ist der Einfluss auf die Rechenleistung betrachtenswert.
+Linpack \cite[vgl.][]{Netlib.20090217} ist ein Programm, um einen CPU Benchmark durchzuführen. Damit wird die Rechenleistung eines einzelnen Containers gemessen. Diese Software wird in vielen verwandten Arbeiten für einen Leistungsvergleich verwendet \cite[vgl.][]{Morabito.2015, Felter.2015, Jain.1991} und wird deshalb auch in dieser Arbeit genutzt.
+
+\section{Sicherheit}
+\label{sec:sicherheit_kriterien}
+Für die Bewertung der Sicherheit müssen geeignete Metriken aufgestellt werden. Dazu sollten die Angriffsvektoren für Container gesammelt und diejenigen weiter verwendet werden, die für eine Container Runtime relevant sind. Das \ac{OWASP} \cite[vgl.][]{OWASP.2020} hat mit dem Projekt \ac{OWASP} Docker Top 10 eine Sammlung der häufigsten Bedrohungen für Container zusammengestellt \cite[vgl.][]{DirkWetter.20181218}. Das \ac{OWASP} ist eine gemeinnützige Organisation mit dem Ziel, die Sicherheit von Webanwendungen zu erhöhen. Eine der bekanntesten Arbeiten ist \ac{OWASP} Top 10, das die häufigsten Schwachstellen in Webanwendungen auflistet und zeigt, wie diese zu vermeiden sind  \cite[vgl.][]{OWASP.2018}. Die Arbeit an dem Projekt \ac{OWASP} Docker Top 10 ist noch nicht abgeschlossen, die Ergebnisse haben bisher einen Entwurfsstatus. Der Titel des Projektes beinhaltet zwar Docker, die beschriebenen Bedrohungen und Angriffsszenarien sind aber auf jede Container Runtime übertragbar  \cite[vgl.][]{DirkWetter.20181218}. Im Folgenden werden die typischen Bedrohungen für Container nach \ac{OWASP} Docker Top 10 beschrieben. 
+
+Eine Bedrohung ist der Ausbruch aus dem Container. Dabei kompromittiert ein Angreifer einen Container und gelangt über Fehlkonfigurationen oder einen Kernel Exploit auf den Host \cite[vgl.][4, 7, 10]{OWASP.2019}. Diese Angriffsszenarien können von einer Runtime verhindert werden, indem der Ausbruch aus dem Kernel erschwert wird. Daher werden diese als Metrik aufgenommen.
+
+Ein Denial of Service Angriff bildet eine weitere Bedrohung. Hier ist ein Dienst nicht mehr verfügbar. Der Grund dafür ist häufig eine Überbelastung des Systems  \cite[vgl.][5, 18]{OWASP.2019}. Diese Bedrohung kann durch eine Container Runtime erschwert werden, deshalb wird sie als Kriterium aufgenommen.
+
+Die Netzwerkschnittstelle bildet einen weiteren Angriffsvektor. Bei einem kompromittierten Container ist es möglich, andere Container, den Host oder die Orchestrierungssoftware über das Netzwerk anzugreifen. Dies lässt sich kaum durch eine Runtime verhindern, wenn der Container für seinen ursprünglichen Einsatzwerk Netzwerkzugriff benötigt \cite[vgl.][]{DirkWetter.2019}. Aus diesem Grund wird diese Bedrohung nicht als Metrik verwendet.
+Auch ein Angriff von einem kompromittierten Host auf einen Container kann durch die Software für den Containerbetrieb nicht verhindert werden und wird daher nicht weiter betrachtet \cite[vgl.][5, 9]{OWASP.2019}.
+Eine weitere Bedrohung können Container Images sein. Dabei kann die Applikation oder das Image infiziert sein. Wenn das Image veraltet ist, kann auch davon eine Bedrohung ausgehen \cite[vgl.][5]{OWASP.2019}. Die betrachteten Kandidaten können die Ausführung von infizierten Images nicht verhindern, daher wird von einer Aufnahme in den Kriterienkatalog abgesehen. 
+In Tabelle \ref{tbl:bedrohungen} werden die für die Bewertung der Container Runtime relevanten Bedrohungen zusammengefasst.
+
+\begin{table}[hbt]
+	\small
+	\myfloatalign
+	\begin{tabularx}{\textwidth}{X} \hline
+		\spacedlowsmallcaps{Bedrohungen} \\ \hline
+		Ausbruch aus dem Container über eine Fehlkonfiguration \\
+		Ausbruch aus dem Container über einen  Kernel Exploit\\
+		Denial of Service Angriff                               \\
+		\hline
+	\end{tabularx}
+	\caption[Übersicht der verschiedenen Bedrohungen]{Übersicht der verschiedenen Bedrohungen}
+	\label{tbl:bedrohungen}
+\end{table}
+
+Aus den Bedrohungen werden im folgenden Angriffsszenarien abgeleitet, mit denen sich  die Sicherheit der Container bewerten lässt. Die Bewertung wird in Kapitel \ref{ch:auswertung} erfolgen.
+
+\subsection{Ausbruch aus dem Container über Fehlkonfiguration}
+Bei dieser Bedrohung übernimmt ein Angreifer die Anwendung in einem Container und gelangt über eine Fehlkonfiguration auf den Host. Dabei listet \ac{OWASP} Docker Top 10 verschiedene Szenarien auf: Ein typischer Fehler ist, dass die Anwendung im Container als root läuft. Wird die Applikation übernommen, hat der Angreifer alle Rechte im Container und nur die Containerisolierung schützt den Host. Hat die Containervirtualisierung eine Lücke, ist eine Übernahme des Hosts möglich \cite[vgl.][7]{OWASP.2019}. Die Runtimes werden darauf geprüft, welche Folgen eine fehlerhafte Nutzerkonfiguration hat. 
+Ein weiteres Szenario ist der Ausbruch über nicht gehärtete Container. Die \ac{OWASP} empfiehlt hier, die Capabilities von Docker weiter zu restriktieren und die Kernelzugriffe mit Seccomp zu filtern \cite[vgl.][13]{OWASP.2019}. Eine Bewertung der Kandidaten wird über die Restriktionen erfolgen, die standardmäßig Anwendung finden. 
+
+\subsection{Ausbruch aus dem Container über einen Kernel Exploit}
+Ein Exploit ist eine Möglichkeit Schwachstellen auszunutzen, um Zugang zu geschützten Ressourcen zu erlangen. Wird über einem Exploit der Kernel aus einem Container heraus angegriffen, kann damit bei einer Containervirtualisierung mit Docker der Host übernommen werden. Damit ist auch ein Zugriff auf die anderen Container auf einem Host möglich \cite[vgl.][4, 9, 10, 15]{OWASP.2019}. Ein Kernel Exploit war 2016 Dirtycow. Darüber ist es möglich, Schreibberechtigungen auf einen schreibgeschützten Bereich des Arbeitsspeichers zu bekommen und damit kann ein unprivilegierter Nutzer des Systems root Rechte erlangen \cite[vgl.][]{Saleel.2017}. Die Runtimes werden danach bewertet, ob ein Containerausbruch über einen Kernel Exploit möglich ist oder nicht.
+
+\subsection{Denial of Service Angriff}
+Bei einem \ac{DoS} Angriff wird ein System mit zu vielen  Anfragen ausgebremst oder zum Absturz gebracht, mit dem Resultat, dass die Anwendung nicht in der gewünschten Form verfügbar ist. Container Runtimes können einen solchen Angriff auf einen Container nur schwer verhindern. Durch das Setzen von Ressourcen Limits für einzelne Container ist es aber möglich, dass andere Container auf dem gleichen Host nicht in Mitleidenschaft gezogen werden. Über die Möglichkeiten dieser Ressourcenlimitierung wird für die einzelnen Runtimes eine Bewertung vorgenommen.
+
+\section{Benutzbarkeit}
+\label{sec:benutzbarkeit_krit}
+Docker hat als Container Runtime derzeit eine hohe Verbreitung \cite[vgl.][5]{sysdig.2019}. Wenn Docker durch eine andere Technologie abgelöst wird, sollte der Wechsel reibungslos vonstattengehen. Daher werden Metriken aufgestellt, wie sich die Benutzbarkeit der Kandidaten gegenüber Docker verhält. Diese Metriken werden anschließend bewertet.
+
+Ein Kriterium ist die Integration in die Systeme Docker und Kubernetes. Dabei wird geprüft, ob die Runtime als alternative Runtime von Docker oder Kubernetes verwendet werden kann. Ein anderer Faktor ist die Installation. Es wird geprüft in welcher Form die Kandidaten zur Installation bereitgestellt werden. Zusätzlich wird bewertet, welche Voraussetzung für die Verwendung einer solchen Runtime erfüllt werden müssen. Weiter wird die Kompatibilität der Kandidaten zu Docker betrachtet. Im Zuge dessen wird geprüft, ob die Docker Images verwendet werden können und ob Probleme mit den Images während der Messungen zur Leistungsfähigkeit auftraten. Zusätzlich wird betrachtet, inwieweit alle Funktionen von Docker verwendet werden können. Diese Kriterien sind in der Tabelle \ref{tbl:benutzbarkeit_zusm} zusammengefasst.
+
+\begin{table}[h]
+	\small
+	\myfloatalign
+	\begin{tabularx}{\textwidth}{X} \hline
+		\spacedlowsmallcaps{Kriterien zur Benutzbarkeit} \\\hline
+		Integration in Docker\\
+		Integration in Kubernetes\\
+		Installation\\
+		Systemvoraussetzungen\\
+		Docker Image Kompatibilität\\
+		Probleme mit Images während den Messungen\\
+		Bereitstellung der Docker Funktionen\\ \hline
+	\end{tabularx}
+	\caption{Übersicht der Kriterien zur Benutzbarkeit}
+	\label{tbl:benutzbarkeit_zusm}
+\end{table}
+\newpage
+
+\section{Gewichtung}
+\label{sec:zielgewichtung}
+Für eine Entscheidungsanalyse nach Dittmer ist eine Zielgewichtung vorgesehen \cite[vgl.][S. 142 ff.]{Dittmer.2002}. Die Kriteriengruppen Leistungsfähigkeit, Sicherheit und Benutzbarkeit werden eingehend beschrieben. In den jeweiligen Gruppen werden die Kriterien mithilfe einer Matrix gewichtet. Die Gruppen Leistungsfähigkeit und Sicherheit werden doppelt so hoch gewichtet, wie die Gruppe Benutzbarkeit, da auf den ersten beiden Gruppen der Fokus der Untersuchung liegt.
+
+Innerhalb der Gruppen wird die Matrix zur Bildung der Rangfolge verwendet \cite[vgl.][146]{Dittmer.2002}. Dazu werden die Kriterien nummeriert. Diese Nummerierung ist der Tabelle \ref{tbl:leistung_nr} für die Leistungsfähigkeit,  \ref{tbl:sicherheit_nr} für die Sicherheit und \ref{tbl:benutzbarkeit_nr} für die Benutzbarkeit zu entnehmen.
+Die Gewichtung wird in den Matrizen \ref{tbl:leistung_gew} für die Leistungsfähigkeit, \ref{tbl:sicherheit_gew} für die Sicherheit und \ref{tbl:benutzbarkeit_gew} für die Benutzbarkeit vorgenommen. Ziel ist es eine Rangfolge zwischen den einzelnen Kriterien zu bilden.  Mithilfe des Gewichtungsverfahrens aus "`Rationales Management"' werden die Matrizen befüllt \cite[vgl.][S. 146 f.]{Dittmer.2002}. Dazu werden  alle Kriterien miteinander verglichen und deren Wichtigkeit festgelegt. Dabei wird in jeder Zelle ein "`x"' gesetzt, in der das Kriterium der Zeile wichtiger ist, als das der Spalte. Ist das Kriterium der Zeile unwichtiger, wird ein "`-"' verwendet. In die Zellen mit dem gleichen Kriterium in der Zeile und der Spalte wird ein "`o"' eingefügt. Anschließend werden die Kreuze gezählt und eine Rangfolge gebildet. Damit wird eine Gewichtung berechnet. Anschließend wird jedem Kreuz eine Prozentzahl zugeordnet, indem 100\% durch die Summe aller Punkte geteilt und mit der Anzahl der Kreuze plus eins multipliziert wird. Die Addition mit eins auf die Anzahl der Kreuze wird durchgeführt, um den Einfluss des Kriteriums mit null Kreuzen nicht zu verlieren  \cite[vgl.][150]{Dittmer.2002}. 
+Mit den kalkulierten Gewichtungen wird in Abschnitt \ref{sec:bewertung} die Bewertung vorgenommen.
+\begin{table}[ht]
+	\small
+	\myfloatalign
+	\begin{tabularx}{\textwidth}{cX} \hline
+		\spacedlowsmallcaps{Nr.} & \spacedlowsmallcaps{Name}\\ \hline 
+		1   & Webserverleistung                                  \\
+		2   & Arbeitsspeichernutzung                             \\
+		3   & Dauer des Startens eines Containers \\
+		4   & Dauer des Entfernens eines Containers \\
+		5   & Netzwerkbandbreite                                 \\
+		6   & Prozessorleistung      \\		\hline
+	\end{tabularx}
+	\caption{Kriterien für die Leistungsfähigkeit}
+	\label{tbl:leistung_nr}
+\end{table}
+
+\begin{table}[ht]
+	\small
+	\myfloatalign
+	\begin{tabularx}{\textwidth}{cXXXXXcccr} \hline
+		\multicolumn{1}{c|}{} & 1 & 2 & 3 & 4 & 5 & \multicolumn{1}{c|}{6} & \tableheadline{$\sum$} & \tableheadline{Rang} & \spacedlowsmallcaps{Gewichtung {[}\%{]}} \\ \hline 
+		\multicolumn{1}{c|}{1} & o & x & x & x & x & \multicolumn{1}{c|}{x} & 5 & 1 & 28,57 \\
+		\multicolumn{1}{c|}{2} & - & o & - & x & - & \multicolumn{1}{c|}{-} & 1 & 5 & 9,52 \\
+		\multicolumn{1}{c|}{3} & - & x & o & x & - & \multicolumn{1}{c|}{-} & 2 & 4 & 14,29 \\
+		\multicolumn{1}{c|}{4} & - & - & - & o & - & \multicolumn{1}{c|}{-} & 0 & 6 & 4,76 \\
+		\multicolumn{1}{c|}{5} & - & x & x & x & o & \multicolumn{1}{c|}{-} & 3 & 3 & 19,05 \\
+		\multicolumn{1}{c|}{6} & - & x & x & x & x & \multicolumn{1}{c|}{o} & 4 & 2 & 23,81 \\ \hline
+	%	& & & & & & & & & \multicolumn{1}{l}{} \\ \hline
+		\multicolumn{7}{r}{Gewichtung von einem Punkt}& 100\% & / 21 & = 4,76\%    \\
+		\hline
+	\end{tabularx}
+	\caption{Gewichtung der Kriterien der Leistungsfähigkeit}
+	\label{tbl:leistung_gew}
+\end{table}
+
+\begin{table}[ht]
+	\small
+	\myfloatalign
+	\	\begin{tabularx}{\textwidth}{cX} \hline
+		\spacedlowsmallcaps{Nr.} & \spacedlowsmallcaps{Name}\\ \hline 
+		1   & Ausbruch aus dem Container über eine Fehlkonfiguration \\
+		2   & Ausbruch aus dem Container über einen Kernel Exploit\\
+		3   & Denial of Service Angriff  \\\hline
+	\end{tabularx}
+	\caption{Kriterien für die Sicherheit}
+	\label{tbl:sicherheit_nr}
+\end{table}
+
+\begin{table}[ht]
+	\small
+	\myfloatalign
+	\begin{tabularx}{\textwidth}{cXXcccr} \hline
+		\multicolumn{1}{c|}{} & 1 & 2 & \multicolumn{1}{c|}{3} & \tableheadline{$\sum$} & \tableheadline{Rang} & \spacedlowsmallcaps{Gewichtung {[}\%{]}} \\ \hline 
+		\multicolumn{1}{c|}{1} & o & - & \multicolumn{1}{c|}{x} & 1 & 2 & \multicolumn{1}{r}{33,33} \\
+		\multicolumn{1}{c|}{2} & x & o & \multicolumn{1}{c|}{x} & 2 & 1 & \multicolumn{1}{r}{50,00} \\
+		\multicolumn{1}{c|}{3} & - & - & \multicolumn{1}{c|}{o} & 0 & 3 & \multicolumn{1}{r}{16,67} \\ \hline
+		%& & & & & & \\ \hline
+		\multicolumn{4}{r}{Gewichtung von einem Punkt} & 100\% & / 6 & = 16,67\% 	\\ 	\hline
+	\end{tabularx}
+	\caption{Gewichtung der Kriterien der Sicherheit}
+	\label{tbl:sicherheit_gew}
+\end{table}
+
+\begin{table}[ht]
+	\small
+	\myfloatalign
+	\begin{tabularx}{\textwidth}{cX} \hline
+		\spacedlowsmallcaps{Nr.} & \spacedlowsmallcaps{Name}\\ \hline 
+		1   & Integration in Docker                     \\
+		2   & Integration in Kubernetes                 \\
+		3   & Installation                              \\
+		4   & Systemvoraussetzungen                     \\
+		5   & Docker Image Kompatibilität               \\
+		6   & Probleme mit Images während den Messungen \\
+		7   & Bereitstellung der Docker Funktionen     \\
+		\hline
+	\end{tabularx}
+	\caption{Kriterien für die Benutzbarkeit}
+	\label{tbl:benutzbarkeit_nr}
+\end{table}
+
+\begin{table}[ht]
+	\small
+	\myfloatalign
+	\begin{tabularx}{\textwidth}{cXXXXXXcccr} \hline
+		\multicolumn{1}{c|}{} & 1 & 2 & 3 & 4 & 5 & 6 & \multicolumn{1}{c|}{7} & \tableheadline{$\sum$} & \tableheadline{Rang} & \spacedlowsmallcaps{Gewichtung {[}\%{]}} \\ \hline
+		\multicolumn{1}{c|}{1} & o & x & x & x & - & - & \multicolumn{1}{l|}{x} & 4 & 3 & 17,86 \\
+		\multicolumn{1}{c|}{2} & - & o & x & x & - & - & \multicolumn{1}{l|}{x} & 3 & 4 & 14,29 \\
+		\multicolumn{1}{c|}{3} & - & - & o & - & - & - & \multicolumn{1}{l|}{-} & 0 & 7 & 3,57 \\
+		\multicolumn{1}{c|}{4} & - & - & x & o & - & - & \multicolumn{1}{l|}{-} & 1 & 6 & 7,14 \\
+		\multicolumn{1}{c|}{5} & x & x & x & x & o & x & \multicolumn{1}{l|}{x} & 6 & 1 & 25,00 \\
+		\multicolumn{1}{c|}{6} & x & x & x & x & - & o & \multicolumn{1}{l|}{x} & 5 & 2 & 21,43 \\
+		\multicolumn{1}{c|}{7} & \multicolumn{1}{l}{-} & \multicolumn{1}{l}{-} & \multicolumn{1}{l}{x} & \multicolumn{1}{l}{x} & \multicolumn{1}{l}{-} & \multicolumn{1}{l}{-} & \multicolumn{1}{l|}{o} & 2 & 5 & 10,71 \\ \hline
+	%	& & & & & & & & & & \multicolumn{1}{l}{} \\ \hline
+		\multicolumn{7}{r}{Gewichtung von einem Punkt} & & 100\% & / 28 & = 3,57\% \\ \hline
+	\end{tabularx}
+	\caption{Gewichtung der Kriterien zur Benutzbarkeit}
+	\label{tbl:benutzbarkeit_gew}
+\end{table}

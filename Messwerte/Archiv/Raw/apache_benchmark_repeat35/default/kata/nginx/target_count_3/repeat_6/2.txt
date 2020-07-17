@@ -1,0 +1,52 @@
+2020/01/16 20:40:39 Running: ab -c 100 -t 30 -n 1000000 http://192.168.3.100:8002/
+2020/01/16 20:41:09 This is ApacheBench, Version 2.3 <$Revision: 1843412 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+Benchmarking 192.168.3.100 (be patient)
+Completed 100000 requests
+Finished 134169 requests
+Server Software:        nginx/1.17.7
+Server Hostname:        192.168.3.100
+Server Port:            8002
+Document Path:          /
+Document Length:        612 bytes
+Concurrency Level:      100
+Time taken for tests:   30.000 seconds
+Complete requests:      134169
+Failed requests:        0
+Total transferred:      113373650 bytes
+HTML transferred:       82112040 bytes
+Requests per second:    4472.30 [#/sec] (mean)
+Time per request:       22.360 [ms] (mean)
+Time per request:       0.224 [ms] (mean, across all concurrent requests)
+Transfer rate:          3690.55 [Kbytes/sec] received
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    2   6.5      1    1004
+Processing:     1   21  95.5     10    1974
+Waiting:        1   20  95.0     10    1974
+Total:          4   22  96.1     11    2156
+Percentage of the requests served within a certain time (ms)
+  50%     11
+  66%     12
+  75%     13
+  80%     13
+  90%     18
+  95%     36
+  98%     48
+  99%    584
+ 100%   2156 (longest request)
+2020/01/16 20:41:09 Matched stat line [Connect:        0    2   6.5      1    1004 Connect 0 2 6.5 1 1004]
+2020/01/16 20:41:09 Matched stat line [Processing:     1   21  95.5     10    1974 Processing 1 21 95.5 10 1974]
+{"connect":{"max":1004,"mean":2,"median":1,"min":0,"stdDev":6.5},"percentiles":{"100":2156,"50":11,"66":12,"75":13,"80":13,"90":18,"95":36,"98":48,"99":584},"processing":{"max":1974,"mean":21,"median":10,"min":1,"stdDev":95.5},"total":{"max":2156,"mean":22,"median":11,"min":4,"stdDev":96.0999984741211},"waiting":{"max":1974,"mean":20,"median":10,"min":1,"stdDev":95}}
+2020/01/16 20:41:09 Matched stat line [Waiting:        1   20  95.0     10    1974 Waiting 1 20 95.0 10 1974]
+2020/01/16 20:41:09 Matched stat line [Total:          4   22  96.1     11    2156 Total 4 22 96.1 11 2156]
+2020/01/16 20:41:09 Matched percentline [  50%     11 50 11]
+2020/01/16 20:41:09 Matched percentline [  66%     12 66 12]
+2020/01/16 20:41:09 Matched percentline [  75%     13 75 13]
+2020/01/16 20:41:09 Matched percentline [  80%     13 80 13]
+2020/01/16 20:41:09 Matched percentline [  90%     18 90 18]
+2020/01/16 20:41:09 Matched percentline [  95%     36 95 36]
+2020/01/16 20:41:09 Matched percentline [  98%     48 98 48]
+2020/01/16 20:41:09 Matched percentline [  99%    584 99 584]
+2020/01/16 20:41:09 Matched percentline [ 100%   2156 100 2156]

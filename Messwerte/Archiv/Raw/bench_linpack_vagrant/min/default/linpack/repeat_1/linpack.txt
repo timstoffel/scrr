@@ -1,0 +1,79 @@
+================================================================================
+HPLinpack 2.3  --  High-Performance Linpack benchmark  --   December 2, 2018
+Written by A. Petitet and R. Clint Whaley,  Innovative Computing Laboratory, UTK
+Modified by Piotr Luszczek, Innovative Computing Laboratory, UTK
+Modified by Julien Langou, University of Colorado Denver
+================================================================================
+
+An explanation of the input/output parameters follows:
+T/V    : Wall time / encoded variant.
+N      : The order of the coefficient matrix A.
+NB     : The partitioning blocking factor.
+P      : The number of process rows.
+Q      : The number of process columns.
+Time   : Time in seconds to solve the linear system.
+Gflops : Rate of execution for solving the linear system.
+
+The following parameter values will be used:
+
+N      :   10000 
+NB     :     232 
+PMAP   : Row-major process mapping
+P      :       2 
+Q      :       2 
+PFACT  :   Right 
+NBMIN  :       4 
+NDIV   :       2 
+RFACT  :   Crout 
+BCAST  :  1ringM 
+DEPTH  :       1 
+SWAP   : Mix (threshold = 64)
+L1     : transposed form
+U      : transposed form
+EQUIL  : yes
+ALIGN  : 8 double precision words
+
+--------------------------------------------------------------------------------
+
+- The matrix A is randomly generated for each test.
+- The following scaled residual check will be computed:
+      ||Ax-b||_oo / ( eps * ( || x ||_oo * || A ||_oo + || b ||_oo ) * N )
+- The relative machine precision (eps) is taken to be               1.110223e-16
+- Computational tests pass if scaled residuals are less than                16.0
+
+[78499e5d697a:00016] Read -1, expected 185600, errno = 1
+[78499e5d697a:00014] Read -1, expected 185600, errno = 1
+[78499e5d697a:00016] Read -1, expected 244992, errno = 1
+[78499e5d697a:00015] Read -1, expected 3897600, errno = 1
+[78499e5d697a:00013] Read -1, expected 3897600, errno = 1
+[78499e5d697a:00015] Read -1, expected 5144832, errno = 1
+[78499e5d697a:00016] Read -1, expected 3732000, errno = 1
+[78499e5d697a:00014] Read -1, expected 3732000, errno = 1
+[78499e5d697a:00016] Read -1, expected 4926240, errno = 1
+[78499e5d697a:00013] Read -1, expected 207872, errno = 1
+[78499e5d697a:00015] Read -1, expected 207872, errno = 1
+[78499e5d697a:00013] Read -1, expected 222720, errno = 1
+[78499e5d697a:00014] Read -1, expected 4179840, errno = 1
+[78499e5d697a:00016] Read -1, expected 4179840, errno = 1
+[78499e5d697a:00014] Read -1, expected 4478400, errno = 1
+[78499e5d697a:00013] Read -1, expected 4157440, errno = 1
+[78499e5d697a:00015] Read -1, expected 4157440, errno = 1
+[78499e5d697a:00013] Read -1, expected 4454400, errno = 1
+[78499e5d697a:00015] Read -1, expected 4305920, errno = 1
+[78499e5d697a:00013] Read -1, expected 4305920, errno = 1
+[78499e5d697a:00015] Read -1, expected 4305920, errno = 1
+[78499e5d697a:00016] Read -1, expected 215296, errno = 1
+[78499e5d697a:00014] Read -1, expected 215296, errno = 1
+[78499e5d697a:00016] Read -1, expected 215296, errno = 1
+[78499e5d697a:00016] Read -1, expected 4113824, errno = 1
+[78499e5d697a:00014] Read -1, expected 4113824, errno = 1
+[78499e5d697a:00016] Read -1, expected 4113824, errno = 1
+[78499e5d697a:00013] Read -1, expected 220864, errno = 1
+[78499e5d697a:00015] Read -1, expected 220864, errno = 1
+[78499e5d697a:00013] Read -1, expected 209728, errno = 1
+[78499e5d697a:00014] Read -1, expected 4220216, errno = 1
+[78499e5d697a:00014] Read -1, expected 4007432, errno = 1
+[78499e5d697a:00016] Read -1, expected 4220216, errno = 1
+[78499e5d697a:00013] Read -1, expected 4196416, errno = 1
+[78499e5d697a:00015] Read -1, expected 4196416, errno = 1
+[78499e5d697a:00013] Read -1, expected 3984832, errno = 1

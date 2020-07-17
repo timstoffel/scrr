@@ -1,0 +1,52 @@
+2020/01/22 11:46:59 Running: ab -c 100 -t 30 -n 1000000 http://192.168.3.100:8002/
+2020/01/22 11:47:30 This is ApacheBench, Version 2.3 <$Revision: 1843412 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+Benchmarking 192.168.3.100 (be patient)
+Completed 100000 requests
+Finished 105712 requests
+Server Software:        nginx/1.17.7
+Server Hostname:        192.168.3.100
+Server Port:            8002
+Document Path:          /
+Document Length:        612 bytes
+Concurrency Level:      100
+Time taken for tests:   30.000 seconds
+Complete requests:      105712
+{"connect":{"max":1025,"mean":7,"median":5,"min":0,"stdDev":16.799999237060547},"percentiles":{"100":1134,"50":22,"66":29,"75":34,"80":38,"90":49,"95":57,"98":82,"99":133},"processing":{"max":350,"mean":21,"median":15,"min":1,"stdDev":23},"total":{"max":1134,"mean":28,"median":22,"min":4,"stdDev":29.700000762939453},"waiting":{"max":347,"mean":21,"median":15,"min":1,"stdDev":22.899999618530273}}
+Failed requests:        0
+Total transferred:      89326640 bytes
+HTML transferred:       64695744 bytes
+Requests per second:    3523.73 [#/sec] (mean)
+Time per request:       28.379 [ms] (mean)
+Time per request:       0.284 [ms] (mean, across all concurrent requests)
+Transfer rate:          2907.76 [Kbytes/sec] received
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    7  16.8      5    1025
+Processing:     1   21  23.0     15     350
+Waiting:        1   21  22.9     15     347
+Total:          4   28  29.7     22    1134
+Percentage of the requests served within a certain time (ms)
+  50%     22
+  66%     29
+  75%     34
+  80%     38
+  90%     49
+  95%     57
+  98%     82
+  99%    133
+ 100%   1134 (longest request)
+2020/01/22 11:47:30 Matched stat line [Connect:        0    7  16.8      5    1025 Connect 0 7 16.8 5 1025]
+2020/01/22 11:47:30 Matched stat line [Processing:     1   21  23.0     15     350 Processing 1 21 23.0 15 350]
+2020/01/22 11:47:30 Matched stat line [Waiting:        1   21  22.9     15     347 Waiting 1 21 22.9 15 347]
+2020/01/22 11:47:30 Matched stat line [Total:          4   28  29.7     22    1134 Total 4 28 29.7 22 1134]
+2020/01/22 11:47:30 Matched percentline [  50%     22 50 22]
+2020/01/22 11:47:30 Matched percentline [  66%     29 66 29]
+2020/01/22 11:47:30 Matched percentline [  75%     34 75 34]
+2020/01/22 11:47:30 Matched percentline [  80%     38 80 38]
+2020/01/22 11:47:30 Matched percentline [  90%     49 90 49]
+2020/01/22 11:47:30 Matched percentline [  95%     57 95 57]
+2020/01/22 11:47:30 Matched percentline [  98%     82 98 82]
+2020/01/22 11:47:30 Matched percentline [  99%    133 99 133]
+2020/01/22 11:47:30 Matched percentline [ 100%   1134 100 1134]

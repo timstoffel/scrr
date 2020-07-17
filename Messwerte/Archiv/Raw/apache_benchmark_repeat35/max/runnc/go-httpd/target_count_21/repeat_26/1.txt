@@ -1,0 +1,15 @@
+2020/01/31 01:14:41 Running: ab -c 100 -t 30 -n 1000000 http://192.168.3.100:8001/
+2020/01/31 01:14:45 This is ApacheBench, Version 2.3 <$Revision: 1843412 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+Benchmarking 192.168.3.100 (be patient)
+apr_socket_recv: Connection refused (111)
+Total of 27867 requests completed
+panic: exit status 111
+goroutine 1 [running]:
+main.check(...)
+	/go/main.go:24
+main.runAb(0x52cc59, 0x2, 0xc000010090, 0x7, 0x7, 0x5f5138)
+	/go/main.go:74 +0x340
+main.main()
+	/go/main.go:111 +0x149

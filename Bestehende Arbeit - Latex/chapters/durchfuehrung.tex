@@ -1,0 +1,245 @@
+\chapter{Durchführung}
+\label{sec:durchführung}
+Nach Festlegung der Bewertungskriterien werden die Kandidaten hinsichtlich ihrer der Leistungsfähigkeit untersucht. Dabei werden die Messungen auf dem beschriebenen Testsystem vorgenommen.
+
+\section{Leistungsfähigkeit}
+
+Die Performanz der Runtimes wird mit verschiedenen Tests gemessen. Dabei liegt ein Schwerpunkt auf der Vergleichbarkeit und Reproduzierbarkeit der Ergebnisse.
+Im weiteren Verlauf der Arbeit werden die Überlegungen und Einschränkungen dargelegt, aus denen sich dann Entscheidungen ableiten, um die Ergebnisse möglichst reproduzierbar und vergleichbar zu erheben.
+
+\subsection{Vorüberlegungen}
+
+Wie in \ref{sec:konzeptperformanzeinsch} erwähnt, unterscheiden sich die Ressourcenlimits der einzelnen Runtimes.
+Damit die Ergebnisse der Leistungsbetrachtung vergleichbar sind, werden die Messungen mit drei verschiedenen Begrenzungen für Systemressourcen durchgeführt. Es wird mit den default, minimalen und maximalen Limits gemessen, vgl. Tabelle \ref{tbl:resslimits}. Minimal ist hierbei an Kata Containers ausgerichtet, da es die niedrigsten Voreinstellungen hat. Bei Maximal wird die gesamte Rechenleistung des Systems als Limit konfiguriert.
+
+\begin{table}[hb]
+	\small
+	\myfloatalign
+	\begin{tabularx}{\textwidth}{Xcc} \hline
+		\spacedlowsmallcaps{Ressourcenlimit} & \tableheadline{Anzahl CPUs}
+		& \tableheadline{RAM in GB} \\ \hline
+		default          & -           & -         \\
+		min              & 1           & 2         \\
+		max              & 6           & 16    		\\
+		\hline
+	\end{tabularx}
+	\caption{Verwendete Ressourcenlimit Stufen}
+	\label{tbl:resslimits}
+\end{table}
+
+Bisher ist unklar, welche Limits Nabla und Kata FC verwenden. Bei Kata FC wird angenommen, dass die gleichen Limits wie bei Kata gelten. Weiter ist nicht bekannt, ob die definierten Limits bei den beiden Runtimes Anwendung finden. Nach einem Issue auf Github, unterstützt Kata FC aktuell keine Beschränkungen \cite[vgl.][]{katacontainers.20190123}. Die Auswertung wird zeigen, ob die Limitierungen von den Runtimes Nabla und Kata FC Anwendung finden.
+
+Kata FC setzt als Speichertreiber 'devicemapper' voraus und dieser ist bis Docker 18.06 verfügbar \cite[vgl.][]{katacontainers.20190514}. Aus diesem Grund wird für alle Benchmarks Docker 18.06 und als Speichertreiber 'devicemapper' verwendet.
+
+Um externe Einflüsse zu minimieren, wird ein abgeschlossenes IT System verwendet. Weiter werden die Container Images von Nabla und ApacheBench kompiliert und mit den Images von Docker Hub archiviert. Alle diese Images werden für die jeweiligen Benchmarks geladen. Dadurch ist gewährleistet, dass immer die gleichen Systeme und Versionen verwendet werden. Nach jeder Messung werden die Caches von Docker gelöscht und die Testumgebung nach jedem Wechsel der Runtime neugestartet.
+
+\subsection{Fehlerrechnung}
+Nach der Messdurchführung werden die Ergebnisse ausgewertet. Um prüfen zu können, ob die Werte aussagekräftig sind, wird das Vertrauensintervall berechnet. Dabei wird ein Konfidenzniveau von 95\% verwendet. Dieser Wert wird auch in der Literatur häufig verwendet \cite[vgl.][212]{Jain.1991}.
+Zur Berechnung wird die Student-t Verteilung verwendet, da diese für Zufallsexperimente mit unbekanntem Erwartungswert ab Stichprobengrößen von 30 gilt \cite[vgl.][26]{Prof.Dr.Ing.L.Grundig.2003}. Deshalb werden alle Messungen 35 mal durchgeführt, um Systemabstürze zu kompensieren.
+Die Bestimmung der Konfidenzintervalle erfolgt mit folgender Formel \ref{eq:studentt} nach \cite[][]{Lohninger.2007}:
+
+\begin{equation}
+\bar{x}\pm\frac{s}{\sqrt{n}} t_{n-1;1-\frac{\alpha}{n}}
+\label{eq:studentt}
+\end{equation}
+
+Dabei steht $t_{n-1;1-\frac{\alpha}{n}}$ für den Wert der t-Verteilung. Für $n$ in $n-1$ wird die Stichprobengröße eingesetzt. Als Signifikanzniveau wird in $1-\frac{\alpha}{n}$ 95\%  verwendet, da bei einem Konfidenzniveau von 99.5\% häufig keine statistisch signifikanten Unterschiede auftreten.
+
+\subsection{Teststellung}
+\label{sec:teststellung}
+
+Ziel des Messaufbaus ist es, möglichst verlässliche Ergebnisse zu erzeugen. Dazu werden alle Messungen auf derselben Hardware ausgeführt, dem Slave. Für die Ausführung der Messungen wird ein weiterer Rechner verwendet, der Master. Beide Computer sind über einen eigenen Switch via Gigabit Ethernet miteinander verbunden. Getrennte Hardware und ein eigener Switch reduzieren externe Einflüsse.
+
+Beide Rechner sind via Ansible installiert. Ansible ist ein Werkzeug, um Computer deklarativ und automatisiert zu administrieren. Dadurch lassen sich die Systeme erneut im gleichen Zustand bereitstellen, um die Messungen wiederholen zu können.
+
+Die Grundlage für beide Systeme ist Debian 10.2. Auf dem Slave werden alle Images gebaut und archiviert. Weiter sind alle vier Runtimes auf dem Slave und Ansible auf dem Controller installiert. Die Messungen werden für Docker, Kata, gVisor und Nabla durchgeführt. Zusätzlich wird für Kata die Ausführungsumgebung Firecracker betrachtet. Die verwendeten Versionen der Runtimes sind der Tabelle \ref{tbl:swversionenruntimes} zu entnehmen. gVisor mit der \ac{KVM} Plattform ist auf der Testumgebung nicht lauffähig. Ein GitHub Issue\footnote{\href{https://github.com/google/gvisor/issues/228}{github.com/google/gvisor/issues/228}} mit der gleichen Fehlerbeschreibung existiert und ist bisher ungelöst.
+
+\begin{table}[ht]
+	\begin{threeparttable}
+		\myfloatalign
+		\small
+		\begin{tabularx}{\textwidth}{Xr} \hline
+			\spacedlowsmallcaps{Name} & \spacedlowsmallcaps{Versionsnummer} \\ \hline
+			Docker & 18.06\\
+			gVisor & 20191213.0\\
+			Kata Containers & 1.10.0-alpha1\\
+			Kata Containers - Firecracker & 1.10.0-alpha1\\
+			Nabla containers & 10.06.2019\tnote{a} \\
+			\hline
+		\end{tabularx}
+		\begin{tablenotes}
+			\item[a]{Programm ist selbst kompiliert mit Commit 2cecc88 von \href{https://github.com/nabla-containers/runnc/}{github.com/nabla-containers/runnc}} 
+		\end{tablenotes}
+	\end{threeparttable}
+	\caption{Verwendete Versionen der Runtimes}
+	\label{tbl:swversionenruntimes}
+\end{table}
+
+Beide Rechner haben eine Intel(R) Core(TM) i5-9500T mit 6 Kernen, der Controller hat 8 GB und der Slave 16 GB Arbeitsspeicher. 
+
+Die Benchmarks selbst wird mit Ansible automatisiert, sodass der Controller die Messungen auf dem Slave autonom durchführen kann.
+
+\subsection{Ermittlung der meistverwendeten Docker Images}
+Damit die Leistungsbetrachtung möglichst viele Anwendungsfälle abdeckt, sollten die meistverwendeten Images verwendet werden. Dazu wird die Annahme getroffen, dass diese die am häufigsten heruntergeladenen offiziellen Images von Docker Hub sind. 
+Mithilfe eines Skripts \ref{lst:dockerhubscript} wird die Representational State Transfer (REST) Schnittstelle von Docker Hub abgefragt. Damit lassen sich die Downloadzahlen der Docker Images ermitteln. Die Webseite zeigt bei den Images mit vielen Downloads 10M+ an. Das Ergebnis\footnote{Stand: 16.01.2020} ist Tabelle \ref{tbl:dockerhubranking} zu entnehmen. Die Zahlen entsprechen der Summe aller Downloads pro Image und sind auf Tausend gerundet. Für die Messungen werden die ersten zehn Images und Tomcat als häufig verwendeter Webserver herangezogen.
+\begin{table}[hb]
+	\small
+	\myfloatalign
+	\begin{tabularx}{\textwidth}{Xr} \hline
+		\spacedlowsmallcaps{Name des Images} & \spacedlowsmallcaps{Anzahl Downloads [In Tausend]} \\ \hline
+		nginx    & 2.147.484 \\
+		busybox  & 2.147.484 \\
+		alpine   & 1.985.276 \\
+		postgres & 1.914.641 \\
+		ubuntu   & 1.727.298 \\
+		httpd    & 1.688.843 \\
+		redis    & 1.606.250 \\
+		mongo    & 1.482.400 \\
+		node     & 1.420.214 \\
+		traefik  & 1.409.298 \\
+		\hline
+	\end{tabularx}
+	\caption[Die häufigsten heruntergeladenen Images]{Die häufigsten heruntergeladenen offiziellen Images von Docker Hub}
+	\label{tbl:dockerhubranking}
+\end{table}
+
+
+\subsection{Verwendete Software Versionen}
+
+Für die Messungen werden verschiedene Images verwendet. Diese können der Tabelle \ref{tbl:swversionenimages} entnommen werden. Die Versionsnummer für die Images entspricht dem Tag oder dem des Basisimages für die Nabla Images. Die Tabelle \ref{tbl:swversionenbenchtools} listet die Versionen der Programme für die Benchmarks auf.
+
+\begin{table}[ht]
+	\begin{threeparttable}
+		\myfloatalign
+		\small
+		\begin{tabularx}{\textwidth}{Xlr} \hline
+			\spacedlowsmallcaps{Name} & \spacedlowsmallcaps{Quelle} & \spacedlowsmallcaps{Version}\\ \hline
+			alpine         & Docker Hub & 3.11.2               \\
+			busybox        & Docker Hub & 1.31.1               \\
+			go-httpd       & Nabla      & 1.13.7-buster        \\
+			httpd          & Docker Hub & 2.4.41               \\
+			mongo          & Docker Hub & 4.0.14-xenial        \\
+			nginx          & Docker Hub & 1.17.7               \\
+			node-express   & Nabla      & 4.3.0                \\
+			postgres       & Docker Hub & 12.1                 \\
+			python-tornado & Nabla      & 3.5.2-alpine         \\
+			redis-test     & Nabla      & 3                    \\
+			tomcat         & Docker Hub & jdk13-openjdk-oracle \\
+			traefik        & Docker Hub & v2.1.2               \\
+			ubuntu         & Docker Hub & bionic-20191202     \\ \hline
+		\end{tabularx}
+	\end{threeparttable}
+	\caption{Verwendete Images mit Tags}
+	\label{tbl:swversionenimages}
+\end{table}
+
+\begin{table}[ht]
+	\begin{threeparttable}[]
+		\myfloatalign
+		\small
+		\begin{tabularx}{\textwidth}{Xr} \hline
+			\spacedlowsmallcaps{Name} & \spacedlowsmallcaps{Versionsnummer} \\ \hline
+			apachebench & 2.3 \\
+			networkstatic/iPerf3 & latest\tnote{a} 	\\
+			edwardchalstrey/hplbenchmark & latest\tnote{b} \\
+			free & 3.3.15 \\
+			time &  5.0.3 (bash) \\
+			\hline
+		\end{tabularx}
+		\begin{tablenotes}
+			\item[a]{entspricht iPerf 3.0.7} 
+			\item[b]{entspricht dem High-Performance Linpack Benchmark in Version 2.3}
+		\end{tablenotes}
+	\end{threeparttable}
+	\caption{Verwendete Versionen Benchmark Tools und Images}
+	\label{tbl:swversionenbenchtools}
+\end{table}
+
+\subsection{Webserverleistung}
+\label{sec:durchführungab}
+Bei dieser Prüfung der Leistungsfähigkeit werden die Anfragen pro Sekunde gemessen, die ein Webserver beantworten kann. Werden mehrere Container parallel betrieben, werden die Ergebnisse addiert.
+
+Für die Messungen wird auf dem Slave ein Webserver in einem Container gestartet. Danach startet ein Container mit ApacheBench auf dem Master. Die Container Images werden vor dem Benchmark archiviert und werden vor jedem Durchlauf geladen. Mithilfe der Fibonaccifolge wird das Skalierungsverhalten untersucht: Es wird die Leistung von einem, zwei, drei, fünf, acht, dreizehn und einundzwanzig parallelen Containern betrachtet. Dabei werden auch genauso viele Container mit ApacheBench gestartet. Durch die Fibonaccifolge ist es möglich, in begrenzter Zeit eine hohe Skalierung zu untersuchen.
+
+\subsubsection{Auswahl der Parameter}
+Die Messungen mit ApacheBench werden mit 100 parallelen Zugriffen und einem Zeitlimit durchgeführt. 
+Um zu bestimmen, welche Messdauer geeignet ist, wird die Messung mit einer Dauer von 30, 60, 120 und 240 Sekunden für einen Container mit der Docker Runtime und dem Image Go Httpd durchgeführt. 
+Die Ergebnisse der Messungen sind der Tabelle \ref{tbl:abdauer} zu entnehmen. Die Werte sind auf signifikante Stellen gerundet und die Konfidenzintervalle und die Standardabweichungen $\sigma$ angegeben.
+
+\begin{table}[hb]
+	\small
+	\myfloatalign
+	\begin{tabularx}{\textwidth}{Xrrrr} \hline
+		\spacedlowsmallcaps{Dauer [s]} & \spacedlowsmallcaps{Schnitt [Req./s]} & \spacedlowsmallcaps{KI unten} & \spacedlowsmallcaps{KI oben} & \spacedlowsmallcaps{$\sigma$} \\ \hline
+		30 & 21679.12 & 21615.41 & 21742.83 & 239.16 \\
+		60 & 21715.48 & 21673.91 & 21757.05 & 156.04 \\
+		90 & 21751.22 & 21716.41 & 21786.04 & 130.68 \\
+		120 & 21720.78 & 21685.54 & 21756.03 & 132.29 \\
+		240 & 21772.78 & 21739.58 & 21805.98 & 124.61 \\ \hline
+	\end{tabularx}
+	\caption[Ergebnisse ApacheBench nach Messdauer]{Ergebnisse des ApacheBench Benchmarks nach Messdauer,}
+	\footnotesize Konfidenzintervalle sind als KI. abgekürzt 
+	\label{tbl:abdauer}
+\end{table}
+
+Die Standardabweichung sinkt mit steigender Messdauer. Es treten aber keine statistisch signifikanten Unterschiede auf. Aus diesem Grund wird eine Messdauer von 30 Sekunden festgelegt.
+
+\subsubsection{Durchführung ApacheBench}
+Die Messungen mit ApacheBench werden für die Runtimes, Docker, Kata, Kata FC, gVisor und Nabla durchgeführt. Als Webserver werden Go Httpd, Python Tornado, Httpd, Nginx und Tomcat verwendet. Mit den sieben Skalierungsstufen und den drei Ressourcenlimits hat dieser Benchmark eine Laufzeit von zehn bis elf Tagen.
+
+Der Messung, mit dem node-express Image beim Start von mehr als einem Container in Nabla, stürzt mehrfach nicht reproduzierbar ab. Daher wird diese nicht in die Messung einbezogen. 
+Weiter kann die Leistung von Python Tornado in Nabla nur bei bis zu acht parallelen Container gemessen werden. Beim Start des elften Containers wird das temporäre Laufwerk /run voll geschrieben. Die Größe von /run entspricht einem Zehntel des Arbeitsspeichers. Wäre die Größe von /run verändert worden, wären die anderen Messergebnisse nicht mehr vergleichbar. Dazu wird ein entsprechendes GitHub Issue\footnote{\href{https://github.com/nabla-containers/runnc/issues/84}{github.com/nabla-containers/runnc/issues/84}} erstellt. Laut eines Nabla Entwicklers lässt sich das Problem lösen, indem ein anderer Speichertreiber verwendet wird. Damit ist aber ein Vergleich mit Kata FC nicht mehr möglich.
+
+Während der Auswertung wurde festgestellt, dass der Container Httpd mit gVisor unregelmäßig abstürzt. Die Größe der Stichprobe ist hier nicht ausreichend, daher wird dieser Fall von der Auswertung ausgeschlossen. Kata FC stürzt nicht reproduzierbar und regelmäßig beim Entfernen von Containern mit dem Tomcat Image ab. Daher wird von einer Messung von Kata FC mit Tomcat abgesehen.
+
+\subsection{Arbeitsspeichernutzung}
+Während der Messung der Webserverleistung, die in \ref{sec:durchführungab} im Detail beschrieben wird, wird die Arbeitsspeichernutzung gemessen. Dazu wird kurz nach dem Start der Messung mit ApacheBench auf dem Slave mit dem Programm free der genutzte Arbeitsspeicher in Megabyte erhoben.
+Diese Messmethode ist nicht exakt, da in den genutzten Arbeitsspeicher auch Caches und Puffer hineinzählen. Durch die unterschiedlichen Architekturen der Kandidaten und der sich daraus unterscheidenden Prozessmodelle ist diese Untersuchung eine unkomplizierte Möglichkeit.
+
+Da das betrachtete System zum Messzeitpunkt keine anderen Aufgaben als die Ausführung der Container für den Test der Webserverleistung durchführen muss, gibt die Messung einen belastbaren Anhaltspunkt.
+
+\subsection{Dauer des Startens und Entfernens eines Containers}
+Um die Dauer des Startens und Entfernens eines Containers zu untersuchen, werden die Nabla Beispiel Images und die häufigsten heruntergeladenen Images von Docker Hub verwendet. Daher kommen die Images Alpine, Busybox, Go Http, Httpd, Mongo DB, Nginx, Node Express, Postgres, Python Tornado, Redis, Tomcat, Traeffic und Ubuntu zum Einsatz. Damit wird eine Vielzahl an Anwendungsfällen abgedeckt. Für die Messung wird das Linux Kommandozeilenprogramm time verwendet. Dieses misst die Zeit vom Absetzten des Kommandos für den Containerstart auf dem Slave, bis der Docker Deamon die Erstellung beendet und der Container einsatzbereit ist. Die Messung erfolgt entsprechend für das Stoppen und Entfernen eines Containers. Gemessen wird die Zeit in Sekunden.
+
+\subsection{Netzwerkbandbreite}
+Für die Ermittlung der Netzwerkleistung werden die verschiedenen Kandidaten mithilfe des Programms iPerf untersucht. Dazu wird auf dem Slave ein iPerf Server in einem Container mit der jeweiligen Runtime gestartet. Anschließend wird auf dem Master ein Container mit dem iPerf Client mit Docker gestartet. Die jeweiligen Containerimages werden vor dem Benchmark archiviert und bei jeder Messung geladen. Dabei wird die Messung einmal für \ac{TCP} durchgeführt und darauf folgend mit \ac{UDP} wiederholt. Bei der Messung für \ac{TCP} wird die Sende- und Empfangsleistung erhoben. Bei \ac{UDP} wird die Sendeleistung bestimmt. Die Messung erfolgt dabei in Bits pro Sekunde.
+
+Da iPerf nicht auf den Rumprun Kernel von Nabla portiert ist, wird die Messung ohne den Kandidaten Nabla vorgenommen. Während der Untersuchung wurde festgestellt, dass gVisor bei der Messung für das Protokoll \ac{UDP} keine Werte lieferte. Eine Suche nach der Fehlerursache blieb ergebnislos. 
+
+Die Messungen mit iPerf werden mit den Standardparametern durchgeführt. Da die Messdauer aber einen Einfluss auf die Streuung der Ergebnisse hat, wird die Auswirkung auf die statistische Signifikanz der Werte untersucht.
+Um zu bestimmen, welche Messdauer geeignet ist, wird die Messung mit einer Dauer von 10, 30, 60, 120 und 240 Sekunden für einen Container mit der Docker Runtime wiederholt. 
+Die Ergebnisse der Messungen sind der Tabelle \ref{tbl:iperfdauer} zu entnehmen. Die Konfidenzintervalle und die Standardabweichungen $\sigma$ sind angegeben. Die Werte sind auf signifikante Stellen gerundet.
+
+\begin{table}[ht]
+	\myfloatalign
+	\small 
+	\begin{tabularx}{\textwidth}{Xlrrrr} \hline
+		\spacedlowsmallcaps{Messung}  &
+		\spacedlowsmallcaps{Dauer [s]} &  \spacedlowsmallcaps{\O [MB/s]} & \spacedlowsmallcaps{KI unten} & \spacedlowsmallcaps{KI oben} & \spacedlowsmallcaps{$\sigma$} \\ \hline
+TCP Senden & 10 & 900,16 & 900,00 & 900,32 & 0,56 \\
+TCP Senden & 30 & 898,50 & 898,38 & 898,61 & 0,40 \\
+TCP Senden & 60 & 898,20 & 898,18 & 898,21 & 0,05 \\
+TCP Senden & 120 & 897,98 & 897,97 & 897,99 & 0,02 \\
+TCP Senden & 240 & 898,00 & 897,82 & 898,18 & 0,62 \\ \hline
+TCP Empfangen & 10 & 899,74 & 899,51 & 899,96 & 0,77 \\
+TCP Empfangen & 30 & 898,42 & 898,31 & 898,52 & 0,37 \\
+TCP Empfangen & 60 & 898,15 & 898,14 & 898,16 & 0,03 \\
+TCP Empfangen & 120 & 897,97 & 897,97 & 897,97 & 0,01 \\
+TCP Empfangen & 240 & 897,99 & 897,81 & 898,17 & 0,62 \\ \hline
+UDP Senden & 10 & 0,99 & 0,99 & 0,99 & 0 \\
+UDP Senden & 30 & 1,00 & 1,00 & 1,00 & 0 \\
+UDP Senden & 60 & 1,00 & 1,00 & 1,00 & 0 \\
+UDP Senden & 120 & 1,00 & 1,00 & 1,00 & 0 \\
+UDP Senden & 240 & 1,00 & 1,00 & 1,00 & 0 \\ \hline
+	\end{tabularx}
+	\caption[Ergebnisse des iPerf Benchmarks nach Messdauer]{Ergebnisse des iPerf Benchmarks nach Messdauer,}
+	\footnotesize Konfidenzintervalle sind als KI. abgekürzt
+	\label{tbl:iperfdauer}
+\end{table}
+
+Die Standardabweichung verändert sich mit steigender Messdauer. Die längste Messdauer hat aber nicht die geringste Standardabweichung. Da die Abweichungen bei jeder Messdauer gering sind, wird eine Dauer von zehn Sekunden definiert. Damit wird die Gesamtdauer der Untersuchung verkürzt.
+
+\subsection{Prozessorleistung}
+Zur Betrachtung der Prozessorleistung wird das Programm Linpack verwendet. Linpack steht für Linear System Package und ist eine Software zur Lösung von linearen Gleichungssystemen. Für die Messung wird ein Docker Image des Alan Turing Institutes verwendet \cite[vgl.][]{EdChalstrey.20.2.2020}. Dieses Image legt die Parameter für die Messung fest. Für die Untersuchung ist die Anzahl der Gleichungen auf 10.000 festgelegt \cite[vgl.][]{EdChalstrey.20190716}. Der Linpack Container wird vor dem Benchmark archiviert und für jede Wiederholung auf dem Slave geladen und ausgeführt. Die Messung erfolgt in Gleitkommaoperationen pro Sekunde (Flops). Die Ergebnisse werden in Giga Flops (GFlops) angegeben. 
+
+Linpack ist bisher nicht zur Nabla Runtime kompatibel. gVisor bricht die Ausführung von Linpack mit einer Fehlermeldung ab\footnote{unable to create shared memory BTL coordinating structure}. Die Vermutung liegt nahe, dass der Systemaufruf für die Speicheranforderung von Sentry nicht das erwartete Ergebnis liefert. Daher wird die Messung ohne die Kandidaten gVisor und Nabla vorgenommen.
